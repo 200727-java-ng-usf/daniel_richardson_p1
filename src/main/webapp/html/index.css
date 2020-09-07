@@ -1,0 +1,32 @@
+
+
+#logindiv {
+    width: 25%;
+    margin:auto;
+    padding-top: 5rem;
+}
+
+h1 {
+        color: red;
+        width: 25%;
+        margin:auto;
+        padding-top: 5rem;
+}
+
+.block {
+    width: 25%;
+    margin:auto;
+    padding: 3rem;
+    border-style: solid;
+    border-color: black;
+}
+
+#create {
+    border-color: blue;
+}
+#update {
+    border-color: red;
+}
+#delete {
+    border-color: purple;
+}

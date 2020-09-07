@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ERS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://localhost:8080/daniel_richardson_p1/html/index.css">
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">ERS DASHBOARD: ADMIN</a>
+</nav>
+
+<!-- -------------------- -->
+<div id="create" class="block">
+    <h3>Create User</h3>
+<!--    <form class="userform" method="post" onsubmit="addUser()">-->
+    <form method="post" action="/daniel_richardson_p1/ers/adduser">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input name="username" class="form-control" id="username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input name="password" class="form-control" id="password">
+        </div>
+        <div class="form-group">
+            <label for="fname">First Name</label>
+            <input name="fname" class="form-control" id="fname">
+        </div>
+        <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input name="lname" class="form-control" id="lname">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input name="email" class="form-control" id="email">
+        </div>
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select class="form-control" id="role" name="role">
+                <option value="3">Employee</option>
+                <option value="2">Manager</option>
+                <option value="1">Admin</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+<!-- -------------------- -->
+<div id="update" class="block">
+
+</div>
+<!-- -------------------- -->
+<div id="delete" class="block">
+
+</div>
+<!-- -------------------- -->
+
+
+<div id="logindiv">
+
+
+</div>
+
+
+</body>
+</html>

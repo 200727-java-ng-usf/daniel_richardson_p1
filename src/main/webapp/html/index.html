@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ERS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://localhost:8080/daniel_richardson_p1/html/index.css">
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">Expense Reimbursement System</a>
+    </nav>
+
+    <div id="logindiv">
+
+        <form method="post" action="/daniel_richardson_p1/ers/login">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input name="username" class="form-control" id="username" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input name="password" type="password" class="form-control" id="password">
+            </div>
+            <div class="form-group">
+                <label for="role">Example select</label>
+                <select class="form-control" id="role" name="requestedrole">
+                    <option value="3">Employee</option>
+                    <option value="2">Manager</option>
+                    <option value="1">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+</body>
+</html>
