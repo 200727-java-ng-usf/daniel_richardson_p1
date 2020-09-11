@@ -20,13 +20,16 @@
   </head>
 
   <body class="text-center">
-    <form class="form-signin">
+    <div class="form-signin">
       <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Expense Reimbursement System</h1>
-      <label for="inputUsername" class="sr-only">Username</label>
-      <input type="username" id="login-username" class="form-control" placeholder="Username" required autofocus>
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+
+      <label for="login-username" class="sr-only">Username</label>
+      <input id="login-username" class="form-control" placeholder="Username" required autofocus>
+
+      <label for="login-password" class="sr-only">Password</label>
+      <input id="login-password" class="form-control" placeholder="Password" required>
+
       <div class="form-group">
         <select class="form-control" id="login-role">
           <option value="3">Employee</option>
@@ -34,11 +37,9 @@
           <option value="1" class="mt-5 mb-3 text-muted" >Admin</option>
         </select>
       </div>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit" id="login-button">Sign in</button>
       <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
-    </form>
-    <div class="alert alert-danger" role="alert" id="login-message">
-
+      <div class="alert alert-danger" role="alert" id="login-message"></div>
     </div>
     <script src="main.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

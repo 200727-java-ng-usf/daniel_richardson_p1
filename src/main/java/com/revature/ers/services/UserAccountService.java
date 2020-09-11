@@ -1,4 +1,4 @@
-//package com.revature.ers.services;
+package com.revature.ers.services;
 //
 //import javax.servlet.http.HttpServletRequest;
 //import java.sql.Connection;
@@ -6,7 +6,7 @@
 //import java.sql.ResultSet;
 //import java.sql.SQLException;
 //
-//public class UserAccountService {
+public class UserAccountService {}
 //
 //
 //    public static boolean addUser(HttpServletRequest req){

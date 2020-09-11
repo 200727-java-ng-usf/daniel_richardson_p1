@@ -10,7 +10,7 @@ public class Principal {
 
     private int id;
     private String username;
-    private String role;
+    private int role;
 
     public Principal() {
         super();
@@ -19,7 +19,7 @@ public class Principal {
     public Principal(AppUser user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.role = user.getRole().toString();
+        this.role = user.getRole();
     }
 
     public int getId() {
@@ -38,11 +38,11 @@ public class Principal {
         this.username = username;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(int role) {
         this.role = role;
     }
 

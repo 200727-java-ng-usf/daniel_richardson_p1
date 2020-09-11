@@ -33,9 +33,9 @@ import java.util.Set;
 public class UserRepository {
 
     // extract common query clauses into a easily referenced member for reusability.
-    private String baseQuery = "SELECT * FROM app_users au " +
-                               "JOIN user_roles ur " +
-                               "ON au.role_id = ur.id ";
+    private String baseQuery = "SELECT * FROM project1.ers_users au " +
+                               "JOIN ers_user_roles ur " +
+                               "ON au.user_role_id = ur.role_id ";
 
     public UserRepository() {
         System.out.println("[LOG] - Instantiating " + this.getClass().getName());
@@ -70,9 +70,9 @@ public class UserRepository {
 
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
-            String sql = "SELECT * FROM app_users au " +
-                         "JOIN user_roles ur " +
-                         "ON au.role_id = ur.id";
+            String sql = "SELECT * FROM project1.ers_users au " +
+                         "JOIN ers_user_roles ur " +
+                         "ON au.user_role_id = ur.role_id";
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -92,12 +92,13 @@ public class UserRepository {
 
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
-            String sql = baseQuery + "WHERE username = ? AND password = ? AND role = ?";
+            String sql = baseQuery + "WHERE username = ? AND password = ? AND user_role_id = ?;";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setInt(3, role);
+            System.out.println(pstmt);
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -166,7 +167,7 @@ public class UserRepository {
 
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
-            String sql = "INSERT INTO app_users (username, password, first_name, last_name, email, role_id) " +
+            String sql = "INSERT INTO project1.ers_users (username, password, first_name, last_name, email, user_role_id) " +
                          "VALUES (?, ?, ?, ?, ?, ?)";
 
             // second parameter here is used to indicate column names that will have generated values
@@ -176,13 +177,13 @@ public class UserRepository {
             pstmt.setString(3, newUser.getFirstName());
             pstmt.setString(4, newUser.getLastName());
             pstmt.setString(5, newUser.getEmail());
-            pstmt.setInt(6, newUser.getRole().ordinal() + 1);
+            pstmt.setInt(6, newUser.getRole());
 
             int rowsInserted = pstmt.executeUpdate();
 
             if (rowsInserted != 0) {
 
-                ResultSet rs = pstmt.getGeneratedKeys();
+                ResultSet rs = pstmt.getGeneratedKeys(); //should be the serialized user_id
 
                 rs.next();
                 newUser.setId(rs.getInt(1));
@@ -201,13 +202,13 @@ public class UserRepository {
 
         while (rs.next()) {
             AppUser temp = new AppUser();
-            temp.setId(rs.getInt("id"));
-            temp.setFirstName(rs.getString("first_name"));
-            temp.setLastName(rs.getString("last_name"));
+            temp.setId(rs.getInt("ers_user_id"));
             temp.setUsername(rs.getString("username"));
             temp.setPassword(rs.getString("password"));
-            temp.setRole(Role.getByName(rs.getString("name")));
+            temp.setFirstName(rs.getString("first_name"));
+            temp.setLastName(rs.getString("last_name"));
             temp.setEmail(rs.getString("email"));
+            temp.setRole(rs.getInt("user_role_id"));
             users.add(temp);
         }
 

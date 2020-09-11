@@ -42,7 +42,7 @@ public class UserServlet extends HttpServlet {
 
         Principal principal = mapper.readValue(principalJSON, Principal.class);
 
-        if (!principal.getRole().equalsIgnoreCase("Admin")) {
+        if (principal.getRole() != 1) {
             ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
             respWriter.write(mapper.writeValueAsString(err));
             resp.setStatus(403); // 403 = FORBIDDEN

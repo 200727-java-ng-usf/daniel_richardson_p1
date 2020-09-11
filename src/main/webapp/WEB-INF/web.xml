@@ -11,26 +11,26 @@
     </welcome-file-list>
 
     <!-- FORWARDING MASTER SERVLET ======================== -->
-    <servlet>
-        <servlet-name>MainServlet</servlet-name>
-        <servlet-class>com.revature.ers.servletsOLD.MainServlet</servlet-class>
-    </servlet>
+<!--    <servlet>-->
+<!--        <servlet-name>MainServlet</servlet-name>-->
+<!--        <servlet-class>com.revature.ers.servletsOLD.MainServlet</servlet-class>-->
+<!--    </servlet>-->
 
-    <servlet-mapping>
-    <servlet-name>MainServlet</servlet-name>
-    <url-pattern>/ers/*</url-pattern>
+<!--    <servlet-mapping>-->
+<!--    <servlet-name>MainServlet</servlet-name>-->
+<!--    <url-pattern>/ers/*</url-pattern>-->
 
-    </servlet-mapping>
-    <!-- JSON SERVLET ======================== -->
-    <servlet>
-        <servlet-name>JSONServlet</servlet-name>
-        <servlet-class>com.revature.ers.servletsOLD.JSONServlet</servlet-class>
-    </servlet>
+<!--    </servlet-mapping>-->
+<!--    &lt;!&ndash; JSON SERVLET ======================== &ndash;&gt;-->
+<!--    <servlet>-->
+<!--        <servlet-name>JSONServlet</servlet-name>-->
+<!--        <servlet-class>com.revature.ers.servletsOLD.JSONServlet</servlet-class>-->
+<!--    </servlet>-->
 
-    <servlet-mapping>
-        <servlet-name>JSONServlet</servlet-name>
-        <url-pattern>/json/*</url-pattern>
-    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>JSONServlet</servlet-name>-->
+<!--        <url-pattern>/json/*</url-pattern>-->
+<!--    </servlet-mapping>-->
 
 </web-app>
 

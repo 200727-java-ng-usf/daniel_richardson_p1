@@ -1,4 +1,4 @@
-//package com.revature.ers.services;
+package com.revature.ers.services;
 //
 //import javax.servlet.http.HttpServletRequest;
 //import java.sql.Connection;
@@ -14,7 +14,7 @@
 // * Requires ConnectionService, ConsoleService
 // * Will send to dashboard
 // */
-//public class LoginService{
+public class LoginService{}
 //    //eager singleton
 //    private static LoginService loginService = new LoginService();
 //

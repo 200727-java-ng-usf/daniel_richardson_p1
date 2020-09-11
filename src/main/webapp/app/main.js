@@ -12,12 +12,19 @@
 
 window.onload = function() {
   // adding event listeners when page loads
-  document.getElementById('toLogin').addEventListener('click', loadLogin);
+  document.getElementById('login-button').addEventListener('click', loginButton);
+  // document.getElementById('login-button').addEventListener('click', alert1);
+  console.log("click event added");
   //hiding error message
   document.getElementById('login-message').setAttribute('hidden', true);
+  console.log("err msg hidden");
 }
 
-function login() { //sends ajax request to auth servlet, POST
+function alert1(){
+  alert("Test");
+}
+
+function loginButton() { //sends ajax request to auth servlet, POST
 
     console.log('login function invoked!');
     let un = document.getElementById('login-username').value;
@@ -29,22 +36,26 @@ function login() { //sends ajax request to auth servlet, POST
         password: pw,
         role: rl
     }
+    console.log(credentials);
     let credentialsJSON = JSON.stringify(credentials); //jsonify
     let xhr = new XMLHttpRequest();
     xhr.open('POST', 'auth');
+    console.log("Sent to auth");
     // third parameter (default true) indicates we want to make this req async
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(credentialsJSON);
     xhr.onreadystatechange = function() {
+      console.log("state: " + xhr.readyState);
         if (xhr.readyState == 4 && xhr.status == 200) {
             console.log("200")
             // https://www.w3schools.com/js/js_window_location.asp
-            window.location.assign("admin.html"); //send to dashboard
+            // window.location.assign("admin.html"); //send to dashboard
 
         } else if(xhr.readyState == 4 && xhr.status == 401){
           document.getElementById('login-message').removeAttribute('hidden');
           let err = JSON.parse(xhr.responseText);
           document.getElementById('login-message').innerText = err.message;
+          console.log("401")
         }
     }
 }

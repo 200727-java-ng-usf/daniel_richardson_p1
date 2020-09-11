@@ -1,5 +1,7 @@
 package com.revature.ers.services;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,6 +13,13 @@ public class ConnectionService{
 
     private ConnectionService() {
         super();
+        try {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            InputStream propsInput = loader.getResourceAsStream("application.properties");
+            props.load(propsInput);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public static ConnectionService getInstance() {
         return connFactory;
@@ -31,16 +40,19 @@ public class ConnectionService{
             e.printStackTrace();
         }
         if (conn == null) {
-            try {
-                conn = DriverManager.getConnection(
-                        System.getenv("url"),
-                        System.getenv("username"),
-                        System.getenv("password")
-                );
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Failed to connect");
         }
+//        if (conn == null) {
+//            try {
+//                conn = DriverManager.getConnection(
+//                        System.getenv("url"),
+//                        System.getenv("username"),
+//                        System.getenv("password")
+//                );
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return conn;
     }
 

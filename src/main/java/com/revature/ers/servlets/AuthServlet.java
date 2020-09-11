@@ -10,6 +10,7 @@ import com.revature.ers.exceptions.InvalidRequestException;
 import com.revature.ers.models.AppUser;
 import com.revature.ers.services.UserService;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +29,7 @@ import java.io.PrintWriter;
  *  --
  */
 
-@WebServlet("/auth")
+@WebServlet("/app/auth")
 public class AuthServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
@@ -41,25 +42,30 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        System.out.println("AUTH invoked");
         ObjectMapper mapper = new ObjectMapper(); //from jackson for json stuff
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        try {
+        try { // User Jackson to read the request body and map the provided JSON to a Java POJO
 
-            // User Jackson to read the request body and map the provided JSON to a Java POJO
-            Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
             //grabs request json, puts it into a credentials object that we then send to userService authentication
+            Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
+            System.out.println(creds.toString());
 
+            //authenticating
             AppUser authUser = userService.authenticate(creds.getUsername(), creds.getPassword(), creds.getRole());
-            Principal principal = new Principal(authUser);
-            //now assigning data to principal object
 
+            Principal principal = new Principal(authUser); //now assigning data to principal object
+            //principal:
+            // -user object
+            // -ID, username, role
             HttpSession session = req.getSession();
-            session.setAttribute("principal", principal.stringify());
+            session.setAttribute("principal", principal.stringify()); //adding principal to session data
 
             resp.setStatus(204); // 204 = NO CONTENT
+            //========instead forwarding depending on role id and role selected
+//            resp.sendRedirect("app/admin.html");
 
         } catch (MismatchedInputException | InvalidRequestException e) {
 
