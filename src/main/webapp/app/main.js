@@ -49,7 +49,7 @@ function loginButton() { //sends ajax request to auth servlet, POST
         if (xhr.readyState == 4 && xhr.status == 200) {
             console.log("200")
             // https://www.w3schools.com/js/js_window_location.asp
-            // window.location.assign("admin.html"); //send to dashboard
+            window.location.assign("admin.html"); //send to dashboard
 
         } else if(xhr.readyState == 4 && xhr.status == 401){
           document.getElementById('login-message').removeAttribute('hidden');

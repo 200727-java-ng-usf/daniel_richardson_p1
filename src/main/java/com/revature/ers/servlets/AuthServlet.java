@@ -63,9 +63,9 @@ public class AuthServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("principal", principal.stringify()); //adding principal to session data
 
-            resp.setStatus(204); // 204 = NO CONTENT
+//            resp.setStatus(204); // 204 = NO CONTENT
             //========instead forwarding depending on role id and role selected
-//            resp.sendRedirect("app/admin.html");
+//            resp.sendRedirect("admin.html");
 
         } catch (MismatchedInputException | InvalidRequestException e) {
 
