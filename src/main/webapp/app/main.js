@@ -12,7 +12,7 @@
 
 window.onload = function() {
   // adding event listeners when page loads
-  document.getElementById('login-button').addEventListener('click', loginButton);
+  document.getElementById('login-button').addEventListener('click', login);
   // document.getElementById('login-button').addEventListener('click', alert1);
   console.log("click event added");
   //hiding error message
@@ -24,7 +24,8 @@ function alert1(){
   alert("Test");
 }
 
-function loginButton() { //sends ajax request to auth servlet, POST
+// ===LOGIN / LOGOUT=======================================================
+function login() { //sends ajax request to auth servlet, POST
 
     console.log('login function invoked!');
     let un = document.getElementById('login-username').value;
@@ -59,3 +60,17 @@ function loginButton() { //sends ajax request to auth servlet, POST
         }
     }
 }
+function logout() {
+    console.log('logout invoked!');
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'auth');
+    xhr.send();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 204) {
+            console.log('logout successful!');
+        }
+    }
+}
+
+//ADMIN STUFF=========================================================
+//======ADD USER==================================

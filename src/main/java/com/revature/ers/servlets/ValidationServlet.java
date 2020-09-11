@@ -9,19 +9,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
+//I don't think I'll handle form validation here.
+//bootstrap ensures forms are valid, and if not, the sql constraints should prevent bad data
 @WebServlet("*.validate")
 public class ValidationServlet extends HttpServlet {
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        boolean isValid = new ValidationHelper().process(req);
-
-        if (isValid) {
-            resp.setStatus(204);
-        } else {
-            resp.setStatus(409);
-        }
-
-    }
+//
+//    @Override
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//
+//        boolean isValid = new ValidationHelper().process(req);
+//
+//        if (isValid) {
+//            resp.setStatus(204);
+//        } else {
+//            resp.setStatus(409);
+//        }
+//
+//    }
 }
