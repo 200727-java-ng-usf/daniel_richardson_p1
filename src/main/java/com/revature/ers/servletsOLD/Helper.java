@@ -1,4 +1,4 @@
-package com.revature.ers.servlets;
+package com.revature.ers.servletsOLD;
 
 import com.revature.ers.controllers.LoginController;
 import com.revature.ers.services.UserAccountService;
@@ -24,11 +24,26 @@ public class Helper {
 
             //====dashboard handling==============================\\
             case "/daniel_richardson_p1/ers/dashboard1":
+            case "/daniel_richardson_p1/html/dashboard1.html":
+                //todo just add authentication class for direct page accessing
+
+                if(req.getSession().getAttribute("role").equals("1")){
+                    //equals check works
+                    //servlet just isn't catching html route (not in xml),
+                    //if all htmls are caught, will be put in endless loop
+                    //can only do /html/dashboard/*, or restructure pages into new directories
+                    System.out.println("USER ATTEMPTED ADMIN PAGE WITH INCORRECT ROLE: " + req.getSession().getAttribute("role"));
+                    return "/html/loginretry.html";
+                }
+                System.out.println(req.getSession().getAttribute("role"));
                 return "/html/dashboard1.html";
 
             //====admin handling==============================\\
             case "/daniel_richardson_p1/ers/adduser":
-                UserAccountService.addUser(req);
+                if(UserAccountService.addUser(req)){
+                    return "/html/dashboard1.html";
+                }
+                //todo if else leads to diff html pages
                 //returns back to admin dashboard
                 return "/html/dashboard1.html";
 

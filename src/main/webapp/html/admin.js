@@ -2,9 +2,9 @@
 
 
 
-function addUser(){
-
-
+function roleCheck(){
+    console.log("Function called");
+    console.log(sessionStorage.getItem("role"));
 }
 
 //

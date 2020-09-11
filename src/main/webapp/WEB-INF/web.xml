@@ -13,17 +13,18 @@
     <!-- FORWARDING MASTER SERVLET ======================== -->
     <servlet>
         <servlet-name>MainServlet</servlet-name>
-        <servlet-class>com.revature.ers.servlets.MainServlet</servlet-class>
+        <servlet-class>com.revature.ers.servletsOLD.MainServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
     <servlet-name>MainServlet</servlet-name>
     <url-pattern>/ers/*</url-pattern>
+
     </servlet-mapping>
     <!-- JSON SERVLET ======================== -->
     <servlet>
         <servlet-name>JSONServlet</servlet-name>
-        <servlet-class>com.revature.ers.servlets.JSONServlet</servlet-class>
+        <servlet-class>com.revature.ers.servletsOLD.JSONServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

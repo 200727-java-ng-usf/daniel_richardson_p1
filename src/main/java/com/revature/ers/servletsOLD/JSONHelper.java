@@ -1,7 +1,6 @@
-package com.revature.ers.servlets;
+package com.revature.ers.servletsOLD;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

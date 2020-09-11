@@ -3,6 +3,7 @@ package com.revature.ers.services;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 //singleton
 public class ConnectionService{
@@ -11,10 +12,10 @@ public class ConnectionService{
     private ConnectionService() {
         super();
     }
-
     public static ConnectionService getInstance() {
         return connFactory;
     }
+    private Properties props = new Properties();
 
     public Connection getConnection() {
         Connection conn = null;
@@ -22,14 +23,23 @@ public class ConnectionService{
             // Force the JVM to load the PostGreSQL JDBC driver
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(
-                    "jdbc:postgresql://dbrev.ctha7md0f2cd.us-west-1.rds.amazonaws.com:5432/postgres?currentSchema=project1",
-                    "drichardson513",
-                    "password1");
+                    props.getProperty("url"),
+                    props.getProperty("username"),
+                    props.getProperty("password")
+            );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
         if (conn == null) {
-            throw new RuntimeException("Failed to establish connection.");
+            try {
+                conn = DriverManager.getConnection(
+                        System.getenv("url"),
+                        System.getenv("username"),
+                        System.getenv("password")
+                );
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return conn;
     }
