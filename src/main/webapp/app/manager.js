@@ -4,20 +4,13 @@ window.onload = function() {
   // hide the main table on dashboard load
   hideAll();
   // building the tables with data
-  getUserData();
   getTicketData();
 
   // adding event listeners for side bar actions
-  document.getElementById('home').addEventListener('click', hideAll);
-  document.getElementById('viewUsers').addEventListener('click', viewUsers);
-  document.getElementById('createUser').addEventListener('click', createUser);
-  document.getElementById('updateUser').addEventListener('click', updateUser);
-  document.getElementById('deleteUser').addEventListener('click', deleteUser);
-  document.getElementById('viewTickets').addEventListener('click', viewTkts);
+  document.getElementById('resolveTicketNav').addEventListener('click', resolveFormView);
+  document.getElementById('viewTicketsNav').addEventListener('click', viewTkts);
   // adding event listeners for forms
-  document.getElementById('createUserBtn').addEventListener('click', createNewUser);
-  document.getElementById('updateUserBtn').addEventListener('click', updateUserInfo);
-  document.getElementById('deleteUserBtn').addEventListener('click', deleteTargetUser);
+  document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
 } //todo: sort show/hide for aesthetics
@@ -28,31 +21,6 @@ function deleteUser(){
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
   $("#deleteUserForm").show(500);
-}
-function createUser(){
-  $("#userView").hide(500);
-  $("#tktView").hide(500);
-  $("#createUserForm").show(500);
-  $("#err-message").hide();
-  $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
-}
-function updateUser(){
-  $("#updateUserForm").show(500);
-  $("#userView").show(750); //also showing table, so the admin could check data
-  $("#tktView").hide(500);
-  $("#createUserForm").hide(500);
-  $("#err-message").hide();
-  $("#deleteUserForm").hide(500);
-}
-function viewUsers(){
-  console.log("Viewing users...");
-  $("#userView").show(500);
-  $("#tktView").hide(500);
-  $("#createUserForm").hide(500);
-  $("#err-message").hide();
-  $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
 }
 function viewTkts(){
   console.log("Viewing tickets...");
