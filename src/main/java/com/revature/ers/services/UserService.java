@@ -49,19 +49,13 @@ public class UserService {
     }
 
     public void register(AppUser newUser) {
-
         if (!isUserValid(newUser)) {
             throw new InvalidRequestException("Invalid user field values provided during registration!");
         }
-
         Optional<AppUser> existingUser = userRepo.findUserByUsername(newUser.getUsername());
         if (existingUser.isPresent()) {
-            // TODO implement a custom ResourcePersistenceException
             throw new RuntimeException("Provided username is already in use!");
         }
-
-
-//        newUser.setRole(Role.BASIC_MEMBER);
         userRepo.save(newUser);
 
     }
@@ -94,12 +88,19 @@ public class UserService {
         return null;
     }
 
-    public boolean deleteUserById(int id) {
-        return false;
+    public void deleteUserByEmail(AppUser deletedUser) {
+        if(deletedUser.getEmail() == null || deletedUser.getEmail().trim().equals("")){
+            throw new InvalidRequestException("Invalid email!");
+        }
+        userRepo.delete(deletedUser);
     }
 
-    public boolean update(AppUser updatedUser) {
-        return false;
+    public void update(AppUser updatedUser) {
+        //make sure updated value isn't bad
+        if (!isUserValid(updatedUser)) {
+            throw new InvalidRequestException("Invalid user field values provided during update!");
+        }
+        userRepo.update(updatedUser);
     }
 
     /**

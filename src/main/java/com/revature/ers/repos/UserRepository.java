@@ -19,6 +19,9 @@ import java.util.Set;
  * -- -email
  * --saves user
  * --maps user
+ * New:
+ * --deletes user
+ * --updates user
  */
 
 /*
@@ -171,24 +174,15 @@ public class UserRepository {
                          "VALUES (?, ?, ?, ?, ?, ?)";
 
             // second parameter here is used to indicate column names that will have generated values
-            PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
+            PreparedStatement pstmt = conn.prepareStatement(sql); //, new String[] {"id"} <buggy
             pstmt.setString(1, newUser.getUsername());
             pstmt.setString(2, newUser.getPassword());
             pstmt.setString(3, newUser.getFirstName());
             pstmt.setString(4, newUser.getLastName());
             pstmt.setString(5, newUser.getEmail());
             pstmt.setInt(6, newUser.getRole());
-
-            int rowsInserted = pstmt.executeUpdate();
-
-            if (rowsInserted != 0) {
-
-                ResultSet rs = pstmt.getGeneratedKeys(); //should be the serialized user_id
-
-                rs.next();
-                newUser.setId(rs.getInt(1));
-
-            }
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
 
         } catch (SQLException sqle) {
             sqle.printStackTrace();
@@ -203,6 +197,7 @@ public class UserRepository {
         while (rs.next()) {
             AppUser temp = new AppUser();
             temp.setId(rs.getInt("ers_user_id"));
+            System.out.println("Mapping... ID: "+temp.getId());
             temp.setUsername(rs.getString("username"));
             temp.setPassword(rs.getString("password"));
             temp.setFirstName(rs.getString("first_name"));
@@ -216,4 +211,51 @@ public class UserRepository {
 
     }
 
+    public void update(AppUser updatedUser) {
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
+
+            String sql = "Update project1.ers_users " +
+                            "SET username = ?, " +
+                                "password = ?, " +
+                                "first_name = ?, " +
+                                "last_name = ?, " +
+                                "user_role_id = ? " +
+                            "WHERE email = ?";
+
+            // second parameter here is used to indicate column names that will have generated values
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, updatedUser.getUsername());
+            pstmt.setString(2, updatedUser.getPassword());
+            pstmt.setString(3, updatedUser.getFirstName());
+            pstmt.setString(4, updatedUser.getLastName());
+            pstmt.setInt(5, updatedUser.getRole());
+            pstmt.setString(6, updatedUser.getEmail());
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+
+    }
+
+    public void delete(AppUser target){ //emails are unique
+        String email = target.getEmail();
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
+
+            String sql = "DELETE FROM project1.ers_users " +
+                    "WHERE email = ?";
+
+            // second parameter here is used to indicate column names that will have generated values
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+    }
 }

@@ -1,6 +1,9 @@
 
 // REFERENCE SNIPPITS======
 // document.getElementById('toLogin').addEventListener('click', loadLogin);
+// $.("#userView").toggle();
+// $.("#userView").hide();
+// $.("#tktView").show();
 
 // NOTES===================
 // XMR CODES
@@ -41,7 +44,6 @@ function login() { //sends ajax request to auth servlet, POST
     let credentialsJSON = JSON.stringify(credentials); //jsonify
     let xhr = new XMLHttpRequest();
     xhr.open('POST', 'auth');
-    console.log("Sent to auth");
     // third parameter (default true) indicates we want to make this req async
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(credentialsJSON);

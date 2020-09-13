@@ -19,6 +19,11 @@ public class AppUser {
         super();
     }
 
+    //this constructor specifically for deletion
+    public AppUser(String email){
+        this.email = email;
+    }
+
     //regular user constructor, no ID
     public AppUser(String firstName, String lastName, String username, String password, String email, int role) {
         this.firstName = firstName;
