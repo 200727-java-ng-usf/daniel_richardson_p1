@@ -59,14 +59,18 @@
           <div class="alert alert-danger" id="err-message"></div>
           <!-- end error message -->
           <!-- ticket resolving form wrapper -->
-          <div id="resolvingTicket">
-            <h2>Update User by Email</h2>
-            <p>Delete all user data associated with email address.</p>
-            <div class="form-group" style="background-color:red">
-              <label for="emailDe">Email</label>
-              <input class="form-control" id="emailDe" placeholder="Email">
+          <div id="resolveTicketForm">
+            <h2>Resolve Ticket</h2>
+            <div class="form-group">
+              <label for="ticketID">Ticket ID</label>
+              <input class="form-control" id="ticketID" placeholder="Ticket ID">
+              <select class="form-control" id="ticketStatus">
+                <option value="2">Approve</option>
+                <option value="3">Deny</option>
+              </select>
             </div>
-            <button class="btn btn-danger" id="deleteUserBtn">Delete</button>
+
+            <button class="btn btn-primary" id="resolveBtn">Resolve</button>
           </div>
           <!-- end ticket form wrapper -->
           <!-- ticket data wrapper -->
@@ -113,7 +117,7 @@
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="admin.js"> </script>
+    <script src="manager.js"> </script>
     <script>
       feather.replace()
     </script>

@@ -73,7 +73,7 @@ public class TicketRepository {
                         "ON er.reimb_status_id = rs.reimb_status_id "+
                         "join project1.ers_users eu "+
                         "on er.author_id = eu.ers_user_id "+
-                        "join project1.ers_users eu2 "+
+                        "left outer join project1.ers_users eu2 "+
                         "on er.resolver_id = eu2.ers_user_id";
 
             Statement stmt = conn.createStatement();
@@ -141,12 +141,32 @@ public class TicketRepository {
 //
 //    }
 
-    public void approve(){ //manager method
+    public void resolve(Ticket ticket){ //manager method
+        //id, resolve, resolver, status
 
-    }
+        //debug
 
-    public void deny(){ //manager method
+        System.out.println(ticket.getResolve());
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
+            String sql = "Update project1.ers_reimbursements " +
+                    "SET resolved = ?, " +
+                    "resolver_id = ?, " +
+                    "reimb_status_id = ? " +
+                    "WHERE reimb_id = ?";
+
+            // second parameter here is used to indicate column names that will have generated values
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setTimestamp(1, ticket.getResolve());
+            pstmt.setInt(2, ticket.getResolverID());
+            pstmt.setInt(3, ticket.getStatusID());
+            pstmt.setInt(4, ticket.getId());
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
 
 

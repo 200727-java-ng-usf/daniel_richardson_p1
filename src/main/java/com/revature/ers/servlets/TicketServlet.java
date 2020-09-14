@@ -86,5 +86,65 @@ public class TicketServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(err));
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter respWriter = resp.getWriter();
+
+        //===================== validate user=====================
+        //principal from session data made from user object data
+        String principalJSON = (String) req.getSession().getAttribute("principal");
+        System.out.println(principalJSON);
+
+        //if someone cheated to get here, send 401
+        if (principalJSON == null) {
+            ErrorResponse err = new ErrorResponse(401, "No principal object found on request.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(401); // 401 = UNAUTHORIZED
+            return; // necessary so that we do not continue with the rest of this method's logic
+        }
+
+        Principal principal = mapper.readValue(principalJSON, Principal.class);
+
+        //if its not an admin OR manager, tell them no
+        //employees can only get their own tickets; we'll use something else for that
+        if (principal.getRole() == 3) {
+            ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(403); // 403 = FORBIDDEN
+            return;
+        }
+        //===================================================
+
+        try {
+            //maps received input into a new user, sends to registration
+            Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+            ticket.setResolverID(principal.getId()); //adding resolver id to the ticket
+            ticket.setResolvedWithCurrentTime();
+            System.out.println(ticket.toString()); //breadcrumb
+            ticketService.resolve(ticket); //send to repo, dao to update
+            resp.setStatus(201); // 201 = CREATED
+
+        } catch (MismatchedInputException mie) {
+
+            resp.setStatus(400); // 400 = BAD REQUEST
+            ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed ticket object found in request body");
+            String errJSON = mapper.writeValueAsString(err);
+            respWriter.write(errJSON);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
+            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
+            respWriter.write(mapper.writeValueAsString(err));
+
+        }
+
+    }
+
 }
 

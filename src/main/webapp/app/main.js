@@ -52,7 +52,15 @@ function login() { //sends ajax request to auth servlet, POST
         if (xhr.readyState == 4 && xhr.status == 200) {
             console.log("200")
             // https://www.w3schools.com/js/js_window_location.asp
-            window.location.assign("admin.html"); //send to dashboard
+
+            switch(rl){
+              case '1': window.location.assign("admin.html"); //send to dashboard
+                break;
+              case '2': window.location.assign("manager.html");
+                break;
+              //case 3:
+            }
+
 
         } else if(xhr.readyState == 4 && xhr.status == 401){
           document.getElementById('login-message').removeAttribute('hidden');

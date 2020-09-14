@@ -1,6 +1,8 @@
 package com.revature.ers.models;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 import java.time.ZoneId;
@@ -21,19 +23,37 @@ public class Ticket {
     // fields/attributes
     private int id;
     private double amount;
-    private Timestamp submitted;
-    private Timestamp resolve;
+    private Timestamp submitted; //https://alvinalexander.com/java/java-timestamp-example-current-time-now/
+    private Timestamp resolve; //RESOLVED timestamp
     private String description;
     private String author; //this is the author's id, but we'll fetch the username
-    private String resolver; //manager's id
-    private String status; //status id, check
+    private int authorID; //and get the id
+    private String resolver; //manager
+    private int resolverID;
+    private String status; //status id
+    private int statusID;
     private String type; //
+    private int typeID;
     //ignoring receipt for now
 
 
     //constructors=======================
     //no args
     public Ticket(){}
+
+    //for when managers resolve a ticket
+    // todo i don't think this is getting mapped... force set the timestamp with setter
+    public Ticket(int id, int resolverID, String status){
+        //make new timestamp
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        Timestamp currentTimestamp = new Timestamp(now.getTime());
+
+        this.id = id; //sql WHERE
+        this.resolve = currentTimestamp; //update
+        this.resolverID = resolverID; //update
+        this.status = status; //update
+    }
 
     //full buckaroo constructor
     public Ticket(int id, int amount, Timestamp submitted, Timestamp resolve, String description, String author, String resolver, String status, String type) {
@@ -68,8 +88,25 @@ public class Ticket {
         this.status = status;
         this.type = type;
     }
+    //util
+    public void setResolvedWithCurrentTime(){
+        //make new timestamp
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        Timestamp currentTimestamp = new Timestamp(now.getTime());
+        this.resolve = currentTimestamp;
+    }
+    public void setSubmittedWithCurrentTime(){
+        //make new timestamp
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        Timestamp currentTimestamp = new Timestamp(now.getTime());
+        this.submitted = currentTimestamp;
+    }
 
     //getter/setters ======================
+
+
     public int getId() {
         return id;
     }
@@ -118,12 +155,28 @@ public class Ticket {
         this.author = author;
     }
 
+    public int getAuthorID() {
+        return authorID;
+    }
+
+    public void setAuthorID(int authorID) {
+        this.authorID = authorID;
+    }
+
     public String getResolver() {
         return resolver;
     }
 
     public void setResolver(String resolver) {
         this.resolver = resolver;
+    }
+
+    public int getResolverID() {
+        return resolverID;
+    }
+
+    public void setResolverID(int resolverID) {
+        this.resolverID = resolverID;
     }
 
     public String getStatus() {
@@ -134,12 +187,28 @@ public class Ticket {
         this.status = status;
     }
 
+    public int getStatusID() {
+        return statusID;
+    }
+
+    public void setStatusID(int statusID) {
+        this.statusID = statusID;
+    }
+
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getTypeID() {
+        return typeID;
+    }
+
+    public void setTypeID(int typeID) {
+        this.typeID = typeID;
     }
 
     @Override
@@ -172,9 +241,13 @@ public class Ticket {
                 ", resolve=" + resolve +
                 ", description='" + description + '\'' +
                 ", author='" + author + '\'' +
+                ", authorID=" + authorID +
                 ", resolver='" + resolver + '\'' +
+                ", resolverID=" + resolverID +
                 ", status='" + status + '\'' +
+                ", statusID=" + statusID +
                 ", type='" + type + '\'' +
+                ", typeID=" + typeID +
                 '}';
     }
 }
