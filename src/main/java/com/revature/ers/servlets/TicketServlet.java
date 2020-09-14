@@ -56,11 +56,13 @@ public class TicketServlet extends HttpServlet {
 
         //if its not an admin OR manager, tell them no
         //employees can only get their own tickets; we'll use something else for that
-        if (principal.getRole() == 3) {
-            ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
-            respWriter.write(mapper.writeValueAsString(err));
-            resp.setStatus(403); // 403 = FORBIDDEN
-            return;
+        if (principal.getRole() != 1){
+            if(principal.getRole() != 2) {
+                ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
+                respWriter.write(mapper.writeValueAsString(err));
+                resp.setStatus(403); // 403 = FORBIDDEN
+                return;
+            }
         }
 
         try {
@@ -122,8 +124,8 @@ public class TicketServlet extends HttpServlet {
         try {
             //maps received input into a new user, sends to registration
             Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
-            ticket.setResolverID(principal.getId()); //adding resolver id to the ticket
-            ticket.setResolvedWithCurrentTime();
+            ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
+            ticket.setResolvedWithCurrentTime(); //adding timestamp
             System.out.println(ticket.toString()); //breadcrumb
             ticketService.resolve(ticket); //send to repo, dao to update
             resp.setStatus(201); // 201 = CREATED

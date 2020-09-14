@@ -28,34 +28,34 @@ public class Ticket {
     private Timestamp resolve; //RESOLVED timestamp
     private String resolvedStr;
     private String description;
-    private String author; //this is the author's id, but we'll fetch the username
-    private int authorID; //and get the id
-    private String resolver; //manager
+    private String author; //the author's username
+    private int authorID; // and its ID
+    private String resolver; //typically the manager's username
     private int resolverID;
-    private String status; //status id
-    private int statusID;
-    private String type; //
+    private String status; //human-readable status
+    private int statusID; //and the corresponding db id
+    private String type;
     private int typeID;
     //ignoring receipt for now
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     //constructors=======================
     //no args
     public Ticket(){}
 
-    //for when managers resolve a ticket
-    // todo i don't think this is getting mapped... force set the timestamp with setter
-    public Ticket(int id, int resolverID, String status){
-        //make new timestamp
-        Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
-        Timestamp currentTimestamp = new Timestamp(now.getTime());
-
-        this.id = id; //sql WHERE
-        this.resolve = currentTimestamp; //update
-        this.resolverID = resolverID; //update
-        this.status = status; //update
-    }
+//    //for when managers resolve a ticket
+//    // todo i don't think this is getting mapped... force set the timestamp with setter
+//    public Ticket(int id, int resolverID, String status){
+//        //make new timestamp
+//        Calendar calendar = Calendar.getInstance();
+//        Date now = calendar.getTime();
+//        Timestamp currentTimestamp = new Timestamp(now.getTime());
+//
+//        this.id = id; //sql WHERE
+//        this.resolve = currentTimestamp; //update
+//        this.resolverID = resolverID; //update
+//        this.status = status; //update
+//    }
 
     //full buckaroo constructor
     public Ticket(int id, int amount, Timestamp submitted, Timestamp resolve, String description, String author, String resolver, String status, String type) {
