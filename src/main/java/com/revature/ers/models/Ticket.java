@@ -1,12 +1,12 @@
 package com.revature.ers.models;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 public class Ticket {
 //    serial reimb_id
@@ -24,7 +24,9 @@ public class Ticket {
     private int id;
     private double amount;
     private Timestamp submitted; //https://alvinalexander.com/java/java-timestamp-example-current-time-now/
+    private String submittedStr; //stringified date for the JSON, is set by setter methods automatically
     private Timestamp resolve; //RESOLVED timestamp
+    private String resolvedStr;
     private String description;
     private String author; //this is the author's id, but we'll fetch the username
     private int authorID; //and get the id
@@ -35,7 +37,7 @@ public class Ticket {
     private String type; //
     private int typeID;
     //ignoring receipt for now
-
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
     //constructors=======================
     //no args
@@ -88,20 +90,20 @@ public class Ticket {
         this.status = status;
         this.type = type;
     }
-    //util
-    public void setResolvedWithCurrentTime(){
+    //util =================================
+    public Timestamp getTimestamp(){
         //make new timestamp
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
-        Timestamp currentTimestamp = new Timestamp(now.getTime());
-        this.resolve = currentTimestamp;
+        return new Timestamp(now.getTime());
+    }
+    public void setResolvedWithCurrentTime(){
+        this.resolve = getTimestamp();
+        this.resolvedStr = dateFormat.format(getTimestamp());
     }
     public void setSubmittedWithCurrentTime(){
-        //make new timestamp
-        Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
-        Timestamp currentTimestamp = new Timestamp(now.getTime());
-        this.submitted = currentTimestamp;
+        this.submitted = getTimestamp();
+        this.submittedStr = dateFormat.format(getTimestamp());
     }
 
     //getter/setters ======================
@@ -129,6 +131,9 @@ public class Ticket {
 
     public void setSubmitted(Timestamp submitted) {
         this.submitted = submitted;
+        if(submitted!=null){ //or else it will throw a null pointer exception
+            this.submittedStr = dateFormat.format(submitted);
+        }
     }
 
     public Timestamp getResolve() {
@@ -137,6 +142,9 @@ public class Ticket {
 
     public void setResolve(Timestamp resolve) {
         this.resolve = resolve;
+        if(resolve!=null){
+            this.resolvedStr = dateFormat.format(resolve);
+        }
     }
 
     public String getDescription() {
@@ -209,6 +217,14 @@ public class Ticket {
 
     public void setTypeID(int typeID) {
         this.typeID = typeID;
+    }
+
+    public String getSubmittedStr() {
+        return submittedStr;
+    }
+
+    public String getResolvedStr() {
+        return resolvedStr;
     }
 
     @Override

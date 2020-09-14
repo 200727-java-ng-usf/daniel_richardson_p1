@@ -186,6 +186,12 @@ public class TicketRepository {
             temp.setType(rs.getString("reimb_type"));
             temp.setStatus(rs.getString("reimb_status"));
             tickets.add(temp);
+
+            // it was a pain to get the date into the json without it bugging out,
+            // fixed this by imbedding a date-to-string method in both submitted and resolved set methods
+            // when we parse the data on the front end,
+                // instead of pulling data from timestamp data, pull from string versions
+
         }
 
         return tickets;
