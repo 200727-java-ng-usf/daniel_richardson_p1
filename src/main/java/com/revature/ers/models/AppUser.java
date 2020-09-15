@@ -12,6 +12,7 @@ public class AppUser {
     private String password;
     private String email;
     private int role;
+    private String roleName;
 
     // constructors
     // no args constructors are required for Jackson to map properly!
@@ -51,6 +52,16 @@ public class AppUser {
     }
 
     // getters and setters
+
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
     public Integer getId() {
         return id;
     }
