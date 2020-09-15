@@ -213,18 +213,24 @@ function createNewUser(){
         console.log("201")
         console.log("User created.")
 
-        //update the user table: https://datatables.net/reference/api/row.add()
-        newUser.id="NEW"; //bug patch
-        var table = $('#userTable').DataTable();
-        var rowNode = table
-            .row.add(newUser)
-            .draw()
-            .node();
-        $( rowNode )
-            .css( 'color', 'red' )
-            .animate( { color: 'black' } );
+        document.getElementById('err-message').innerText = "Creation successful! Refreshing...";
+        errorView();
+        setTimeout(function(){
+          location.reload();
+        }, 3000); //3 second timer
 
-        viewUsers();
+        //update the user table: https://datatables.net/reference/api/row.add()
+        // newUser.id="NEW"; //bug patch
+        // var table = $('#userTable').DataTable();
+        // var rowNode = table
+        //     .row.add(newUser)
+        //     .draw()
+        //     .node();
+        // $( rowNode )
+        //     .css( 'color', 'red' )
+        //     .animate( { color: 'black' } );
+        //
+        // viewUsers();
 
     } else if(xhr.readyState == 4 && xhr.status != 201){
       errorView();
