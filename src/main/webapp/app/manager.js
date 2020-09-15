@@ -9,6 +9,7 @@ window.onload = function() {
   // adding event listeners for side bar actions
   document.getElementById('resolveTicketNav').addEventListener('click', resolveFormView);
   document.getElementById('viewTicketsNav').addEventListener('click', viewTkts);
+  document.getElementById('logoutNav').addEventListener('click', logout);
   // adding event listeners for forms
   document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
   // $('#userTable').DataTable();
@@ -131,6 +132,7 @@ function logout() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 204) {
             console.log('logout successful!');
+            window.location.assign("index.html");
         }
     }
 }

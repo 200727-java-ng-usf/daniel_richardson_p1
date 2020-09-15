@@ -4,7 +4,7 @@ window.onload = function() {
   // hide the main table on dashboard load
   hideAll();
   // building the tables with data
-  // getTicketData();
+  getTicketData();
 
   // adding event listeners for side bar actions
   document.getElementById('submitTicketNav').addEventListener('click', submitTicketView);
@@ -13,6 +13,7 @@ window.onload = function() {
   // adding event listeners for forms
   document.getElementById('editTicketBtn').addEventListener('click', editTicket);
   document.getElementById('submitTicketBtn').addEventListener('click', submitTicket);
+  document.getElementById('logoutNav').addEventListener('click', logout);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
 } //todo: sort show/hide for aesthetics
@@ -58,10 +59,14 @@ function errorView(){
 
 function editTicket(){
   console.log('Editing Ticket...');
-  let aa = document.getElementById('ticketIDEd').value;
-  let bb = document.getElementById('amountEd').value;
-  let cc = document.getElementById('descEd').value;
-  let dd = document.getElementById('typeEd').value;
+  let aa = document.getElementById("ticketIDEd").value;
+  console.log(aa);
+  let bb = document.getElementById("amountEd").value;
+  console.log(bb);
+  let cc = document.getElementById("descEd").value;
+  console.log(cc);
+  let dd = document.getElementById("typeEd").value;
+  console.log(dd);
 
   let solution = {
     id: aa,
@@ -190,6 +195,7 @@ function logout() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 204) {
             console.log('logout successful!');
+            window.location.assign("index.html");
         }
     }
 }

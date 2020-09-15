@@ -14,6 +14,7 @@ window.onload = function() {
   document.getElementById('updateUser').addEventListener('click', updateUser);
   document.getElementById('deleteUser').addEventListener('click', deleteUser);
   document.getElementById('viewTickets').addEventListener('click', viewTkts);
+  document.getElementById('logoutNav').addEventListener('click', logout);
   // adding event listeners for forms
   document.getElementById('createUserBtn').addEventListener('click', createNewUser);
   document.getElementById('updateUserBtn').addEventListener('click', updateUserInfo);
@@ -335,7 +336,15 @@ function getTicketData(){
 function alert1(){
   alert("Test"); //for debugging
 }
-//JQUERY
-// $(document).ready( function () {
-//     $('#userTable').DataTable();
-// } );(jQuery);
+function logout() {
+    console.log('logout invoked!');
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'auth');
+    xhr.send();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 204) {
+            console.log('logout successful!');
+            window.location.assign("index.html");
+        }
+    }
+}

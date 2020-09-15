@@ -69,11 +69,11 @@ public class TicketServlet extends HttpServlet {
             return;
         }
 
-        try { //todo bug
+        try {
             //check if the user is logged in as an employee,
             //if so, we'll just return that user's tickets
             if (principal.getRole() == 3){
-                Set<Ticket> tickets = ticketService.getTicketsByUserID(principal.getUsername()); //get the tickets, adds to set
+                Set<Ticket> tickets = ticketService.getTicketsByUsername(principal.getUsername()); //get the tickets, adds to set
                 String ticketsJSON = mapper.writeValueAsString(tickets); //packaged into json
                 System.out.println(ticketsJSON); //breadcrumbs
                 respWriter.write(ticketsJSON); //kobe
@@ -146,19 +146,18 @@ public class TicketServlet extends HttpServlet {
             return;
         }
 
-        try { //todo things
+        try {
             //check if the user is logged in as an employee,
             //if so, we'll send to edit methods
             if (principal.getRole() == 3){
                 Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
-//                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
-//                ticket.setResolvedWithCurrentTime(); //adding timestamp
-//                System.out.println(ticket.toString()); //breadcrumb
-                ticketService.resolve(ticket); //send to repo, dao to update
+                ticket.setAuthorID(principal.getId()); //adding id to the ticket, from session (principal)
+                System.out.println(ticket.toString()); //breadcrumb
+                ticketService.editPending(ticket, principal); //send to repo, dao to update
                 resp.setStatus(201); // 201 = CREATED
             }
 
-            //if user is an admin or manager, return all the tickets
+            //if user is an admin or manager, send to resolver methods
             if (principal.getRole() == 1 || principal.getRole() == 2) {
                 Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
                 ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
@@ -225,37 +224,13 @@ public class TicketServlet extends HttpServlet {
             return;
         }
 
-//        //if its not an admin OR manager, tell them no
-//        //employees can only get their own tickets; we'll use something else for that
-//        if (principal.getRole() == 3) {
-//            ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
-//            respWriter.write(mapper.writeValueAsString(err));
-//            resp.setStatus(403); // 403 = FORBIDDEN
-//            return;
-//        }
-        //===================================================
-
-        try { //todo things
-            //check if the user is logged in as an employee,
-            //if so, we'll send to edit methods
-            if (principal.getRole() == 3){
-                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
-//                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
-//                ticket.setResolvedWithCurrentTime(); //adding timestamp
-//                System.out.println(ticket.toString()); //breadcrumb
-                ticketService.resolve(ticket); //send to repo, dao to update
-                resp.setStatus(201); // 201 = CREATED
-            }
-
-            //if user is an admin or manager, return all the tickets
-            if (principal.getRole() == 1 || principal.getRole() == 2) {
-                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
-                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
-                ticket.setResolvedWithCurrentTime(); //adding timestamp
-                System.out.println(ticket.toString()); //breadcrumb
-                ticketService.resolve(ticket); //send to repo, dao to update
-                resp.setStatus(201); // 201 = CREATED
-            }
+        try {
+            Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+            ticket.setSubmittedWithCurrentTime(); //timestamp
+            ticket.setAuthorID(principal.getId()); //set the author
+            System.out.println(ticket.toString()); //breadcrumb
+            ticketService.submit(ticket); //send to repo, dao to update
+            resp.setStatus(201); // 201 = CREATED
 
         } catch (MismatchedInputException mie) {
 

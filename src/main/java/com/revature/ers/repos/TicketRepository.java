@@ -1,5 +1,6 @@
 package com.revature.ers.repos;
 
+import com.revature.ers.dtos.Principal;
 import com.revature.ers.models.AppUser;
 import com.revature.ers.models.Ticket;
 import com.revature.ers.services.ConnectionService;
@@ -29,12 +30,9 @@ public class TicketRepository {
     }
 
 
-//    public Set<Ticket> findTicketsByUserId(int id) {
-    public Set<Ticket> findTicketsByUserId(String username) {
+    public Set<Ticket> findTicketsByUsername(String username) {
         Set<Ticket> tickets = new HashSet<>();
-
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
-
             String sql = "SELECT distinct er.reimb_id, "+
                             "eu.username, "+
                             "er.amount, "+
@@ -54,27 +52,23 @@ public class TicketRepository {
                             "left outer join project1.ers_users eu2 "+
                             "on er.resolver_id = eu2.ers_user_id " +
                          "WHERE eu.username = ?";
-
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, username); //WHY DOES THIS NOT WORK
+            pstmt.setString(1, username);
             System.out.println(pstmt);
-
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
             tickets = mapResultSet(rs);
+            //before, it gave me a syntax error at end of input
+            //solved this by removing stmt variable with sql in the argument of execute query
+                //stmt vs pstmt
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return tickets;
-
     }
 
     public Set<Ticket> findAllTickets() {
-
         Set<Ticket> tickets = new HashSet<>();
-
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
             // my people call this 'fettuccini sql'
             String sql = "SELECT distinct er.reimb_id, "+
@@ -99,27 +93,44 @@ public class TicketRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             tickets = mapResultSet(rs);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return tickets;
-
     }
 
-    public void update(Ticket ticket){ //employee method
-        //ticket id, amount, description, type
-        System.out.println(ticket.getResolve());
-        try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
+    public void resolve(Ticket ticket){ //manager method
+        //id, resolve, resolver, status
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
+            String sql = "Update project1.ers_reimbursements " +
+                    "SET resolved = ?, " +
+                    "resolver_id = ?, " +
+                    "reimb_status_id = ? " +
+                    "WHERE reimb_id = ?";
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setTimestamp(1, ticket.getResolve());
+            pstmt.setInt(2, ticket.getResolverID());
+            pstmt.setInt(3, ticket.getStatusID());
+            pstmt.setInt(4, ticket.getId());
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+    }
+
+
+    public void editPending(Ticket ticket){ //employee method
+        //id, amount, desc, type
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
             String sql = "Update project1.ers_reimbursements " +
                     "SET amount = ?, " +
                     "description = ?, " +
-                    "type_id = ? " +
+                    "reimb_type_id = ? " +
                     "WHERE reimb_id = ?";
 
-            // second parameter here is used to indicate column names that will have generated values
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setDouble(1, ticket.getAmount());
             pstmt.setString(2, ticket.getDescription());
@@ -133,41 +144,54 @@ public class TicketRepository {
         }
     }
 
-    public void resolve(Ticket ticket){ //manager method
-        //id, resolve, resolver, status
-
-        //debug
-
-        System.out.println(ticket.getResolve());
+    public void submit(Ticket ticket){ //employee method
+        //submitted, author, status, amount, description, typeID
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
+            String sql = "INSERT into project1.ers_reimbursements " +
+                    "(amount, description, submitted, author_id, reimb_type_id, reimb_status_id) " +
+                    "VALUES (?, ?, ?, ?, ?, 1)";
 
-            String sql = "Update project1.ers_reimbursements " +
-                    "SET resolved = ?, " +
-                    "resolver_id = ?, " +
-                    "reimb_status_id = ? " +
-                    "WHERE reimb_id = ?";
-
-            // second parameter here is used to indicate column names that will have generated values
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setTimestamp(1, ticket.getResolve());
-            pstmt.setInt(2, ticket.getResolverID());
-            pstmt.setInt(3, ticket.getStatusID());
-            pstmt.setInt(4, ticket.getId());
+            pstmt.setDouble(1, ticket.getAmount());
+            pstmt.setString(2, ticket.getDescription());
+            pstmt.setTimestamp(3, ticket.getSubmitted());
+            pstmt.setInt(4, ticket.getAuthorID());
+            pstmt.setInt(5, ticket.getTypeID());
             System.out.println(pstmt);
             pstmt.executeUpdate();
-
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
     }
 
 
+    public boolean validateTicketWithUser(Ticket ticket){
+        //make sure the user is editing their own ticket
+        //also make sure its PENDING
+        try(Connection conn = ConnectionService.getInstance().getConnection()){
+            String sql = "select * from ers_reimbursements " +
+                            "where reimb_id = ? and author_id = ? and reimb_status_id = 1";
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, ticket.getId());
+            pstmt.setInt(2, ticket.getAuthorID()); //set from servlet
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                //if there's a thing (should only be one), it's valid
+                return true;
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return false;
+    }
+
+
     private Set<Ticket> mapResultSet(ResultSet rs) throws SQLException {
         System.out.println("Mapper invoked.");
         Set<Ticket> tickets = new HashSet<>();
-
         while(rs.next()) {
-            System.out.println("rs next exists");
+            System.out.println("rs.next found a row...");
             Ticket temp = new Ticket();
             temp.setId(rs.getInt("reimb_id"));
             temp.setAmount(rs.getDouble("amount"));
@@ -179,45 +203,11 @@ public class TicketRepository {
             temp.setType(rs.getString("reimb_type"));
             temp.setStatus(rs.getString("reimb_status"));
             tickets.add(temp);
-
             // it was a pain to get the date into the json without it bugging out,
             // fixed this by imbedding a date-to-string method in both submitted and resolved set methods
             // when we parse the data on the front end,
                 // instead of pulling data from timestamp data, pull from string versions
-
         }
-
         return tickets;
-
     }
-//    private Set<Ticket> mapUserResultSet(ResultSet rs, String username) throws SQLException {
-//        Set<Ticket> tickets = new HashSet<>();
-//
-//        while(rs.next()) {
-//            if(rs.getString("username") == username) {
-//                Ticket temp = new Ticket();
-//                temp.setId(rs.getInt("reimb_id"));
-//                temp.setAmount(rs.getDouble("amount"));
-//                temp.setSubmitted(rs.getTimestamp("submitted"));
-//                temp.setResolve(rs.getTimestamp("resolved"));
-//                temp.setDescription(rs.getString("description"));
-//                temp.setAuthor(rs.getString("username"));
-//                temp.setResolver(rs.getString("resolver"));
-//                temp.setType(rs.getString("reimb_type"));
-//                temp.setStatus(rs.getString("reimb_status"));
-//                tickets.add(temp);
-//            }
-//
-//
-//            // it was a pain to get the date into the json without it bugging out,
-//            // fixed this by imbedding a date-to-string method in both submitted and resolved set methods
-//            // when we parse the data on the front end,
-//            // instead of pulling data from timestamp data, pull from string versions
-//
-//        }
-//
-//        return tickets;
-//
-//    }
-
 }

@@ -21,44 +21,41 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
-      <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">Sign out</a>
-        </li>
-      </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Company ERS</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="viewTicketsNav">
+              <span data-feather="layers"></span>
+              Tickets
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="submitTicketNav">
+              <span data-feather="users"></span>
+              Submit New
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="editTicketNav">
+              <span data-feather="users"></span>
+              Edit Pending
+            </a>
+          </li>
+        </ul>
+        <span class="navbar-text" href="#" id="logoutNav">
+          Logout
+        </span>
+      </div>
     </nav>
 
     <div class="container-fluid">
       <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-          <div class="sidebar-sticky">
-            <ul class="nav flex-column">
-
-              <li class="nav-item">
-                <a class="nav-link" href="#" id="viewTicketsNav">
-                  <span data-feather="layers"></span>
-                  Tickets
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" id="submitTicketNav">
-                  <span data-feather="users"></span>
-                  Submit New
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" id="editTicketNav">
-                  <span data-feather="users"></span>
-                  Edit Pending
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <main role="main" class="col-md-9 col-lg-10 pt-3 px-4">
           <!-- Using a div to handle hiding/showing tables-->
           <!-- error message handling, always on top -->
           <div class="alert alert-danger" id="err-message"></div>
@@ -68,11 +65,11 @@
             <h2>Edit Pending Ticket</h2>
             <div class="form-group">
               <label for="ticketIDEd">ID</label>
-              <input class="form-control" id="ticketIDed">
+              <input class="form-control" id="ticketIDEd" placeholder="ID">
               <label for="amountEd">Amount</label>
-              <input class="form-control" id="amountEd">
+              <input class="form-control" id="amountEd" placeholder="Amount">
               <label for="descEd">Description</label>
-              <input class="form-control" id="descEd">
+              <input class="form-control" id="descEd" placeholder="Description">
               <select class="form-control" id="typeEd">
                 <option value="1">Lodging</option>
                 <option value="2">Travel</option>
