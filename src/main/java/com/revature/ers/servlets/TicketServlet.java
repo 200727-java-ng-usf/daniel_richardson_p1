@@ -20,18 +20,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 
-@WebServlet("/app/tickets/*")
+
+/** TICKET SERVLET  /app/tickets
+ * doGet: gets all tickets or just the ones belonging to user (from principal data)
+ * doPut: Updates a user's ticket (from employee form) OR resolves a ticket (from manager form)
+ * doPost: creates a new ticket (from employee form)
+ */
+
+@WebServlet("/app/tickets")
 public class TicketServlet extends HttpServlet {
 
     private final TicketService ticketService = new TicketService();
 
     /**
-     * Gets tickets
+     * Gets all the tickets or just the ones by userID
      * @param req
      * @param resp
      * @throws ServletException
      * @throws IOException
      */
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("Tickets GET invoked!");
@@ -53,25 +61,33 @@ public class TicketServlet extends HttpServlet {
         }
 
         Principal principal = mapper.readValue(principalJSON, Principal.class);
-
-        //if its not an admin OR manager, tell them no
-        //employees can only get their own tickets; we'll use something else for that
-        if (principal.getRole() != 1){
-            if(principal.getRole() != 2) {
-                ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
-                respWriter.write(mapper.writeValueAsString(err));
-                resp.setStatus(403); // 403 = FORBIDDEN
-                return;
-            }
+        //double check and make sure the role is valid
+        if (principal.getRole() < 1 || principal.getRole() > 3) {
+            ErrorResponse err = new ErrorResponse(400, "Malformed role ID.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(400); // 403 = FORBIDDEN
+            return;
         }
 
-        try {
+        try { //todo bug
+            //check if the user is logged in as an employee,
+            //if so, we'll just return that user's tickets
+            if (principal.getRole() == 3){
+                Set<Ticket> tickets = ticketService.getTicketsByUserID(principal.getUsername()); //get the tickets, adds to set
+                String ticketsJSON = mapper.writeValueAsString(tickets); //packaged into json
+                System.out.println(ticketsJSON); //breadcrumbs
+                respWriter.write(ticketsJSON); //kobe
+                resp.setStatus(200); // confirmed
+            }
+
+            //if user is an admin or manager, return all the tickets
+            if (principal.getRole() == 1 || principal.getRole() == 2) {
                 Set<Ticket> tickets = ticketService.getAllTickets(); //get the tickets, adds to set
                 String ticketsJSON = mapper.writeValueAsString(tickets); //packaged into json
                 System.out.println(ticketsJSON); //breadcrumbs
                 respWriter.write(ticketsJSON); //kobe
                 resp.setStatus(200); // confirmed
-
+            }
         } catch (ResourceNotFoundException rnfe) {
             resp.setStatus(404);
             ErrorResponse err = new ErrorResponse(404, rnfe.getMessage());
@@ -88,6 +104,96 @@ public class TicketServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(err));
         }
     }
+
+
+    /** doPUT
+     * From employee: updates a pending ticket
+     * From manager/admin: resolves a ticket
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    //this is a PUT request to follow with REST rules
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter respWriter = resp.getWriter();
+
+        //===================== validate user=====================
+        //principal from session data made from user object data
+        String principalJSON = (String) req.getSession().getAttribute("principal");
+        System.out.println(principalJSON);
+
+        //if someone cheated to get here, send 401
+        if (principalJSON == null) {
+            ErrorResponse err = new ErrorResponse(401, "No principal object found on request.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(401); // 401 = UNAUTHORIZED
+            return; // necessary so that we do not continue with the rest of this method's logic
+        }
+
+        Principal principal = mapper.readValue(principalJSON, Principal.class);
+
+        //double check and make sure the role is valid
+        if (principal.getRole() < 1 || principal.getRole() > 3) {
+            ErrorResponse err = new ErrorResponse(400, "Malformed role ID.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(400); // 403 = FORBIDDEN
+            return;
+        }
+
+        try { //todo things
+            //check if the user is logged in as an employee,
+            //if so, we'll send to edit methods
+            if (principal.getRole() == 3){
+                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+//                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
+//                ticket.setResolvedWithCurrentTime(); //adding timestamp
+//                System.out.println(ticket.toString()); //breadcrumb
+                ticketService.resolve(ticket); //send to repo, dao to update
+                resp.setStatus(201); // 201 = CREATED
+            }
+
+            //if user is an admin or manager, return all the tickets
+            if (principal.getRole() == 1 || principal.getRole() == 2) {
+                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
+                ticket.setResolvedWithCurrentTime(); //adding timestamp
+                System.out.println(ticket.toString()); //breadcrumb
+                ticketService.resolve(ticket); //send to repo, dao to update
+                resp.setStatus(201); // 201 = CREATED
+            }
+
+        } catch (MismatchedInputException mie) {
+
+            resp.setStatus(400); // 400 = BAD REQUEST
+            ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed ticket object found in request body");
+            String errJSON = mapper.writeValueAsString(err);
+            respWriter.write(errJSON);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
+            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
+            respWriter.write(mapper.writeValueAsString(err));
+
+        }
+
+    }
+
+    /** doPOST
+     * From employee: creates a new ticket
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -111,24 +217,45 @@ public class TicketServlet extends HttpServlet {
 
         Principal principal = mapper.readValue(principalJSON, Principal.class);
 
-        //if its not an admin OR manager, tell them no
-        //employees can only get their own tickets; we'll use something else for that
-        if (principal.getRole() == 3) {
-            ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
+        //double check and make sure the role is valid
+        if (principal.getRole() < 1 || principal.getRole() > 3) {
+            ErrorResponse err = new ErrorResponse(400, "Malformed role ID.");
             respWriter.write(mapper.writeValueAsString(err));
-            resp.setStatus(403); // 403 = FORBIDDEN
+            resp.setStatus(400); // 403 = FORBIDDEN
             return;
         }
+
+//        //if its not an admin OR manager, tell them no
+//        //employees can only get their own tickets; we'll use something else for that
+//        if (principal.getRole() == 3) {
+//            ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
+//            respWriter.write(mapper.writeValueAsString(err));
+//            resp.setStatus(403); // 403 = FORBIDDEN
+//            return;
+//        }
         //===================================================
 
-        try {
-            //maps received input into a new user, sends to registration
-            Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
-            ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
-            ticket.setResolvedWithCurrentTime(); //adding timestamp
-            System.out.println(ticket.toString()); //breadcrumb
-            ticketService.resolve(ticket); //send to repo, dao to update
-            resp.setStatus(201); // 201 = CREATED
+        try { //todo things
+            //check if the user is logged in as an employee,
+            //if so, we'll send to edit methods
+            if (principal.getRole() == 3){
+                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+//                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
+//                ticket.setResolvedWithCurrentTime(); //adding timestamp
+//                System.out.println(ticket.toString()); //breadcrumb
+                ticketService.resolve(ticket); //send to repo, dao to update
+                resp.setStatus(201); // 201 = CREATED
+            }
+
+            //if user is an admin or manager, return all the tickets
+            if (principal.getRole() == 1 || principal.getRole() == 2) {
+                Ticket ticket = mapper.readValue(req.getInputStream(), Ticket.class); //map to ticket
+                ticket.setResolverID(principal.getId()); //adding resolver id to the ticket, from session (principal)
+                ticket.setResolvedWithCurrentTime(); //adding timestamp
+                System.out.println(ticket.toString()); //breadcrumb
+                ticketService.resolve(ticket); //send to repo, dao to update
+                resp.setStatus(201); // 201 = CREATED
+            }
 
         } catch (MismatchedInputException mie) {
 

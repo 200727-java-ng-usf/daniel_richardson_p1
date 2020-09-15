@@ -58,7 +58,8 @@ function login() { //sends ajax request to auth servlet, POST
                 break;
               case '2': window.location.assign("manager.html");
                 break;
-              //case 3:
+              case '3': window.location.assign("employee.html");
+                break;
             }
 
 
@@ -81,6 +82,3 @@ function logout() {
         }
     }
 }
-
-//ADMIN STUFF=========================================================
-//======ADD USER==================================

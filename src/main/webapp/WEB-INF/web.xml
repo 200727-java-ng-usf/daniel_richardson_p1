@@ -1,3 +1,4 @@
+<!-- This is the deployment descriptor-->
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
@@ -7,7 +8,7 @@
     <display-name>ERS</display-name>
 
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>/app/index.html</welcome-file>
     </welcome-file-list>
 
     <!-- FORWARDING MASTER SERVLET ======================== -->

@@ -95,7 +95,7 @@ function deleteTargetUser(){
   console.log(userTarget);
   let userJSON = JSON.stringify(userTarget); //jsonify
   let xhr = new XMLHttpRequest();
-  xhr.open('POST', 'delete/user');
+  xhr.open('DELETE', 'users');
   // third parameter (default true) indicates we want to make this req async
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(userJSON);
@@ -153,13 +153,13 @@ function updateUserInfo(){
   console.log(editUser);
   let userJSON = JSON.stringify(editUser); //jsonify
   let xhr = new XMLHttpRequest();
-  xhr.open('POST', 'update/user');
+  xhr.open('PUT', 'users');
   // third parameter (default true) indicates we want to make this req async
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(userJSON);
   xhr.onreadystatechange = function() {
     console.log("State: " + xhr.readyState);
-    if (xhr.readyState == 4 && xhr.status == 204) { //201 created
+    if (xhr.readyState == 4 && xhr.status == 204) {
         console.log("204")
         console.log("User updated.")
 

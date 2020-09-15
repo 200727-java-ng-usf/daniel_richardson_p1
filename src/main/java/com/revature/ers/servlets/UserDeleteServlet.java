@@ -22,38 +22,38 @@ import java.util.Set;
 public class UserDeleteServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
-
-
-    /**
-     * Delete, POST only
-     * deletes a user based on email address
-     *
-     * @param req
-     * @param resp
-     * @throws ServletException
-     * @throws IOException
-     */
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        resp.setContentType("application/json");
-
-        ObjectMapper mapper = new ObjectMapper();
-        PrintWriter respWriter = resp.getWriter();
-
-        try {
-            AppUser targetUser = mapper.readValue(req.getInputStream(), AppUser.class);
-            System.out.println(targetUser.toString());
-            userService.deleteUserByEmail(targetUser);
-            resp.setStatus(204); // 204 = confirmed
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
-            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
-            respWriter.write(mapper.writeValueAsString(err));
-
-        }
-
-    }
+//
+//
+//    /**
+//     * Delete, POST only
+//     * deletes a user based on email address
+//     *
+//     * @param req
+//     * @param resp
+//     * @throws ServletException
+//     * @throws IOException
+//     */
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//
+//        resp.setContentType("application/json");
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        PrintWriter respWriter = resp.getWriter();
+//
+//        try {
+//            AppUser targetUser = mapper.readValue(req.getInputStream(), AppUser.class);
+//            System.out.println(targetUser.toString());
+//            userService.deleteUserByEmail(targetUser);
+//            resp.setStatus(204); // 204 = confirmed
+//
+//        } catch (Exception e) {
+//
+//            e.printStackTrace();
+//            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
+//            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
+//            respWriter.write(mapper.writeValueAsString(err));
+//
+//        }
+//
+//    }
 }

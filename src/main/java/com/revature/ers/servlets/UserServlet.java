@@ -18,6 +18,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 
+
+/** USER SERVLET:        /app/users/*
+ * DoGet: Grabs all users, or just by ID
+ * DoPut: Updates a user's info
+ * DoPost: Creates a new user
+ * DoDelete: Deletes a user
+ */
 @WebServlet("/app/users/*")
 public class UserServlet extends HttpServlet {
 
@@ -51,7 +58,13 @@ public class UserServlet extends HttpServlet {
         }
 
         Principal principal = mapper.readValue(principalJSON, Principal.class);
-
+        //double check and make sure the role is valid
+        if (principal.getRole() < 1 || principal.getRole() > 3) {
+            ErrorResponse err = new ErrorResponse(400, "Malformed role ID.");
+            respWriter.write(mapper.writeValueAsString(err));
+            resp.setStatus(400); // 403 = FORBIDDEN
+            return;
+        }
         //if its not an admin, tell them no
         if (principal.getRole() != 1) {
             ErrorResponse err = new ErrorResponse(403, "Forbidden: Your role does not permit you to access this endpoint.");
@@ -91,6 +104,82 @@ public class UserServlet extends HttpServlet {
             ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
             respWriter.write(mapper.writeValueAsString(err));
         }
+    }
+
+    /**
+     * Delete
+     * deletes a user based on email address
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter respWriter = resp.getWriter();
+
+        try {
+            AppUser targetUser = mapper.readValue(req.getInputStream(), AppUser.class);
+            System.out.println(targetUser.toString());
+            userService.deleteUserByEmail(targetUser);
+            resp.setStatus(204); // 204 = confirmed
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
+            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
+            respWriter.write(mapper.writeValueAsString(err));
+
+        }
+
+    }
+
+
+    /**
+     * Update, doPut
+     * updates a user based on email address
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter respWriter = resp.getWriter();
+
+        try {
+            AppUser fixedUser = mapper.readValue(req.getInputStream(), AppUser.class);
+            System.out.println(fixedUser.toString());
+            userService.update(fixedUser);
+            resp.setStatus(204); // 204 = confirmed
+
+        } catch (MismatchedInputException mie) {
+
+            resp.setStatus(400); // 400 = BAD REQUEST
+            ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request body");
+            String errJSON = mapper.writeValueAsString(err);
+            respWriter.write(errJSON);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
+            ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
+            respWriter.write(mapper.writeValueAsString(err));
+
+        }
+
     }
 
     /**

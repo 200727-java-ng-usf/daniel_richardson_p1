@@ -4,32 +4,44 @@ window.onload = function() {
   // hide the main table on dashboard load
   hideAll();
   // building the tables with data
-  getTicketData();
+  // getTicketData();
 
   // adding event listeners for side bar actions
-  document.getElementById('resolveTicketNav').addEventListener('click', resolveFormView);
+  document.getElementById('submitTicketNav').addEventListener('click', submitTicketView);
+  document.getElementById('editTicketNav').addEventListener('click', editTicketView);
   document.getElementById('viewTicketsNav').addEventListener('click', viewTkts);
   // adding event listeners for forms
-  document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
+  document.getElementById('editTicketBtn').addEventListener('click', editTicket);
+  document.getElementById('submitTicketBtn').addEventListener('click', submitTicket);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
 } //todo: sort show/hide for aesthetics
-function resolveFormView(){
+function submitTicketView(){
   console.log("Showing form...")
-  $("#resolveTicketForm").show(500);
+  $("#editTicketForm").hide(500);
+  $("#submitTicketForm").show(500);
+  $("#tktView").hide(500);
+  $("#err-message").hide();
+}
+function editTicketView(){
+  console.log("Showing form...")
+  $("#editTicketForm").show(500);
+  $("#submitTicketForm").hide(500);
   $("#tktView").hide(500);
   $("#err-message").hide();
 }
 function viewTkts(){
   console.log("Viewing tickets...");
-  $("#resolveTicketForm").hide(500);
+  $("#editTicketForm").hide(500);
+  $("#submitTicketForm").hide(500);
   $("#tktView").show(500);
   $("#err-message").hide();
 }
 
 function hideAll(){
   console.log("Hiding everything...");
-  $("#resolveTicketForm").hide(500);
+  $("#editTicketForm").hide(500);
+  $("#submitTicketForm").hide(500);
   $("#tktView").hide(500);
   $("#err-message").hide();
 }
@@ -44,16 +56,18 @@ function errorView(){
   },200);
 }
 
-function resolveTicket(){
-  console.log('Resolving Ticket...');
-  let id = document.getElementById('ticketID').value;
-  let status = document.getElementById('ticketStatus').value;
-  //note about status value
-  //changing the value here to ints, for the statusID instead of status
-    //makes it convenient for sql stuff later
+function editTicket(){
+  console.log('Editing Ticket...');
+  let aa = document.getElementById('ticketIDEd').value;
+  let bb = document.getElementById('amountEd').value;
+  let cc = document.getElementById('descEd').value;
+  let dd = document.getElementById('typeEd').value;
+
   let solution = {
-    id: id,
-    statusID: status
+    id: aa,
+    amount: bb,
+    description: cc,
+    typeID: dd
   }
   console.log(solution);
   let solutionJSON = JSON.stringify(solution); //jsonify
@@ -66,12 +80,56 @@ function resolveTicket(){
   xhr.onreadystatechange = function() {
     console.log("State: " + xhr.readyState);
     if (xhr.readyState == 4 && xhr.status == 201) {
-        console.log("201")
-        console.log("Sent resolution.")
+        console.log("201");
+        console.log("Sent resolution.");
 
         //todo: fiddle with DataTable api to update row
         //for now, just refresh the page to invoke the pageload functions
         document.getElementById('err-message').innerText = "Update successful! Refreshing...";
+        errorView();
+        setTimeout(function(){
+          location.reload();
+        }, 3000); //3 second timer
+
+
+    } else if(xhr.readyState == 4 && xhr.status != 201){
+      errorView();
+      let err = JSON.parse(xhr.responseText);
+      document.getElementById('err-message').innerText = err.message;
+      console.log("Error");
+    }
+  }
+
+}
+
+function submitTicket(){
+  console.log('Submitting New Ticket...');
+  let aa = document.getElementById('amountSu').value;
+  let bb = document.getElementById('descSu').value;
+  let cc = document.getElementById('typeSu').value;
+
+  let solution = {
+    amount: aa,
+    description: bb,
+    typeID: cc
+  }
+  console.log(solution);
+  let solutionJSON = JSON.stringify(solution); //jsonify
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', 'tickets');
+  // third parameter (default true) indicates we want to make this req async
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(solutionJSON);
+  //
+  xhr.onreadystatechange = function() {
+    console.log("State: " + xhr.readyState);
+    if (xhr.readyState == 4 && xhr.status == 201) {
+        console.log("201");
+        console.log("Sent ticket.");
+
+        //todo: fiddle with DataTable api to update row
+        //for now, just refresh the page to invoke the pageload functions
+        document.getElementById('err-message').innerText = "Submission successful! Refreshing...";
         errorView();
         setTimeout(function(){
           location.reload();
@@ -123,6 +181,7 @@ function getTicketData(){
       }
     }
 }
+
 function logout() {
     console.log('logout invoked!');
     let xhr = new XMLHttpRequest();

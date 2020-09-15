@@ -24,6 +24,19 @@ public class TicketService {
         return tickets;
 
     }
+    public Set<Ticket> getTicketsByUserID(String username) {
+
+//        if (username ) {
+//            throw new InvalidRequestException("The provided id cannot be less than or equal to zero.");
+//        }
+        Set<Ticket> tickets = ticketRepo.findTicketsByUserId(username);
+        if (tickets.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+        return tickets;
+    }
+
+
     public void resolve(Ticket ticket) {
         //make sure updated value isn't bad
 
