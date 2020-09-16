@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Credentials {
 
     private String username;
-    private String password;
+    private String password; //stored as string hashcode
     private int role;
 
     public Credentials() {
@@ -25,7 +25,7 @@ public class Credentials {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = Integer.toString(password.hashCode());
     }
 
     public int getRole() {

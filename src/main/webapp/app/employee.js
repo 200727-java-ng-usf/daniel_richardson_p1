@@ -5,6 +5,7 @@ window.onload = function() {
   hideAll();
   // building the tables with data
   getTicketData();
+  viewTkts();
 
   // adding event listeners for side bar actions
   document.getElementById('submitTicketNav').addEventListener('click', submitTicketView);
@@ -169,6 +170,7 @@ function getTicketData(){
         console.log("ticketsJSON length: " + ticketJSON.length);
         $('#ticketTable').DataTable( {
           "autoWidth": false,
+          "paging": false,
             data: ticketJSON,
             columns: [
                 { data: 'id' },

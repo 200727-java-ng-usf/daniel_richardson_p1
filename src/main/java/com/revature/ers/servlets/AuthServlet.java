@@ -48,25 +48,17 @@ public class AuthServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try { // User Jackson to read the request body and map the provided JSON to a Java POJO
-
             //grabs request json, puts it into a credentials object that we then send to userService authentication
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
             System.out.println(creds.toString());
-
             //authenticating
             AppUser authUser = userService.authenticate(creds.getUsername(), creds.getPassword(), creds.getRole());
-
             Principal principal = new Principal(authUser); //now assigning data to principal object
             //principal:
             // -user object
             // -ID, username, role
             HttpSession session = req.getSession();
             session.setAttribute("principal", principal.stringify()); //adding principal to session data
-
-//            resp.setStatus(204); // 204 = NO CONTENT
-            //========instead forwarding depending on role id and role selected
-//            resp.sendRedirect("admin.html");
-
         } catch (MismatchedInputException | InvalidRequestException e) {
 
             resp.setStatus(400);

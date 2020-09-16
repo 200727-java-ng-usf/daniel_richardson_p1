@@ -3,48 +3,49 @@ window.onload = function() {
   console.log("Loading functions...");
   // hide the main table on dashboard load
   hideAll();
+  viewUsers(); //just auto show users
   // building the tables with data
   getUserData();
   getTicketData();
 
   // adding event listeners for side bar actions
-  document.getElementById('home').addEventListener('click', hideAll);
+  // document.getElementById('home').addEventListener('click', hideAll);
   document.getElementById('viewUsers').addEventListener('click', viewUsers);
   document.getElementById('createUser').addEventListener('click', createUser);
   document.getElementById('updateUser').addEventListener('click', updateUser);
-  document.getElementById('deleteUser').addEventListener('click', deleteUser);
+  // document.getElementById('deleteUser').addEventListener('click', deleteUser);
   document.getElementById('viewTickets').addEventListener('click', viewTkts);
   document.getElementById('logoutNav').addEventListener('click', logout);
   // adding event listeners for forms
   document.getElementById('createUserBtn').addEventListener('click', createNewUser);
   document.getElementById('updateUserBtn').addEventListener('click', updateUserInfo);
-  document.getElementById('deleteUserBtn').addEventListener('click', deleteTargetUser);
+  // document.getElementById('deleteUserBtn').addEventListener('click', deleteTargetUser);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
 } //todo: sort show/hide for aesthetics
-function deleteUser(){
-  $("#userView").hide(500);
-  $("#tktView").hide(500);
-  $("#createUserForm").hide(500);
-  $("#err-message").hide();
-  $("#updateUserForm").hide(500);
-  $("#deleteUserForm").show(500);
-}
+// function deleteUser(){
+//   $("#userView").hide(500);
+//   $("#tktView").hide(500);
+//   $("#createUserForm").hide(500);
+//   $("#err-message").hide();
+//   $("#updateUserForm").hide(500);
+//   $("#deleteUserForm").show(500);
+// }
 function createUser(){
   $("#userView").hide(500);
   $("#tktView").hide(500);
   $("#createUserForm").show(500);
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
+  // $("#deleteUserForm").hide(500);
 }
 function updateUser(){
   $("#updateUserForm").show(500);
-  $("#userView").show(750); //also showing table, so the admin could check data
+  $("#userView").hide(5000);
   $("#tktView").hide(500);
   $("#createUserForm").hide(500);
   $("#err-message").hide();
-  $("#deleteUserForm").hide(500);
+  // $("#deleteUserForm").hide(500);
 }
 function viewUsers(){
   console.log("Viewing users...");
@@ -53,7 +54,7 @@ function viewUsers(){
   $("#createUserForm").hide(500);
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
+  // $("#deleteUserForm").hide(500);
 }
 function viewTkts(){
   console.log("Viewing tickets...");
@@ -64,17 +65,17 @@ function viewTkts(){
   $("#createUserForm").hide(500);
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
+  // $("#deleteUserForm").hide(500);
 }
 
 function hideAll(){
   console.log("Hiding everything...");
-  $("#err-message").hide();
-  $("#userView").hide(500);
-  $("#tktView").hide(500);
-  $("#createUserForm").hide(500);
-  $("#updateUserForm").hide(500);
-  $("#deleteUserForm").hide(500);
+  $("#err-message").hide(0);
+  $("#userView").hide(0);
+  $("#tktView").hide(0);
+  $("#createUserForm").hide(0);
+  $("#updateUserForm").hide(0);
+  // $("#deleteUserForm").hide(500);
 }
 
 function errorView(){
@@ -87,9 +88,10 @@ function errorView(){
   },200);
 }
 
-function deleteTargetUser(){
+function deleteTargetUser(email){
   console.log('Deleting user...');
-  let aa = document.getElementById('emailDe').value;
+  // let aa = document.getElementById('emailDe').value;
+  let aa = email;
   let userTarget = {
     email: aa
   }
@@ -127,7 +129,7 @@ function deleteTargetUser(){
 }
 
 
-function updateUserInfo(){
+function updateUserInfo(id){
   //updating based on email instead of ID
   //this is because of an edge case where if an admin made a user,
   //realized a mistake and wanted to update it (without refreshing),
@@ -141,6 +143,7 @@ function updateUserInfo(){
   let dd = document.getElementById('lastNameUp').value;
   let ee = document.getElementById('emailUp').value;
   let ff = document.getElementById('roleUp').value;
+  let gg = document.getElementById('IDUp').value;
 
   //making the object to jsonification
   let editUser = {
@@ -149,7 +152,8 @@ function updateUserInfo(){
       firstName: cc,
       lastName: dd,
       email: ee,
-      role: ff
+      role: ff,
+      id: gg
   }
   console.log(editUser);
   let userJSON = JSON.stringify(editUser); //jsonify
@@ -258,8 +262,9 @@ function getUserData(){
         userJSON = JSON.parse(xhr.responseText);
         console.log("userJSON length: " + userJSON.length);
         console.log("user 0: "+ userJSON[0].username);
-        $('#userTable').DataTable( {
+        let table = $('#userTable').DataTable( {
           "autoWidth": false,
+          "paging": false,
             data: userJSON,
             columns: [
                 { data: 'id' },
@@ -268,7 +273,11 @@ function getUserData(){
                 { data: 'firstName' },
                 { data: 'lastName' },
                 { data: 'email' },
-                { data: 'role' }
+                { data: 'roleName' },
+                { data: null,
+                defaultContent:
+                  "<a class='tableDelBtn' href='#'><span data-feather='trash-2'></span></a><a class='tableEditBtn' href='#'><span data-feather='edit-2'></span></a>"
+                } //we're adding buttons to the form here
             ]
         } );
         //there was a bug using bootstrap with the datatables...
@@ -279,26 +288,36 @@ function getUserData(){
             //or maybe should've done that to begin with
         $("#userTable").addClass("table table-striped table-sm");
 
+        //re-initialize feather replacing
+        feather.replace();
+        //add button logic to the table
+        $('#userTable tbody').on( 'click', '.tableDelBtn', function () { //from datatable api
+          var data = table.row( $(this).parents('tr') ).data(); //creates an object
+          //confirm for deletion
+          let conf = confirm("Are you sure you wish to delete "+ data.username+" ?");
+          if(conf){
+            //if so, send to normal delete method
+            deleteTargetUser(data.email);
+          }
 
-        //gu's code===============================
-        // let table = document.getElementById("userTabTgt");
-        // for(let i = 0 ; i < userJSON.length ; i++){
-        //   let newRow = document.createElement("tr");
-        //   newRow.innerHTML =
-        //     "<td>" + userJSON[i].id + "</td>" +
-        //     "<td>" + userJSON[i].firstName + "</td>" +
-        //     "<td>" + userJSON[i].lastName + "</td>" +
-        //     "<td>" + userJSON[i].username + "</td>" +
-        //     "<td>" + userJSON[i].password + "</td>" +
-        //     "<td>" + userJSON[i].email + "</td>" +
-        //     "<td>" + userJSON[i].role + "</td>";
-        //   table.appendChild(newRow);
-          // IF STATEMENT FOR ROLE DISPLAY
-      //   }
-      // } else if(xhr.readyState == 4 && xhr.status != 200){
-      //   document.getElementById('err-message').removeAttribute('hidden');
-      //   let err = JSON.parse(xhr.responseText);
-      //   document.getElementById('err-message').innerText = err.message;
+        } );
+
+        $('#userTable tbody').on( 'click', '.tableEditBtn', function () { //from datatable api
+          var data = table.row( $(this).parents('tr') ).data(); //creates an object
+          //replaces the ID value in the update form with the selected row's id value
+          document.getElementById('IDUp').value = data.id;
+          //also replaces values in the other bits to what was in the data
+          document.getElementById('emailUp').value = data.email;
+          document.getElementById('usernameUp').value = data.username;
+          document.getElementById('passwordUp').value = data.password;
+          document.getElementById('firstNameUp').value = data.firstName;
+          document.getElementById('lastNameUp').value = data.lastName;
+          // document.getElementById('roleUp').value = data.roleName;
+          //then swap views to the update form
+          updateUser();
+        } );
+
+
       }
     }
 }
@@ -320,11 +339,12 @@ function getTicketData(){
         console.log("ticketsJSON length: " + ticketJSON.length);
         $('#ticketTable').DataTable( {
           "autoWidth": false,
+          "paging": false,
             data: ticketJSON,
             columns: [
                 { data: 'id' },
                 { data: 'author' },
-                { data: 'amount' },
+                { data: 'amount'},
                 { data: 'submittedStr' },
                 { data: 'resolvedStr' },
                 { data: 'description' },

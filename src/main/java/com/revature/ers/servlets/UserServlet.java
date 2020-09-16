@@ -39,16 +39,11 @@ public class UserServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("UserServlet GET invoked!");
-
         ObjectMapper mapper = new ObjectMapper();
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
-
         //principal from session data made from user object data
         String principalJSON = (String) req.getSession().getAttribute("principal");
-        System.out.println(principalJSON);
-
         //if someone cheated to get here, send 401
         if (principalJSON == null) {
             ErrorResponse err = new ErrorResponse(401, "No principal object found on request.");
@@ -56,7 +51,6 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(401); // 401 = UNAUTHORIZED
             return; // necessary so that we do not continue with the rest of this method's logic
         }
-
         Principal principal = mapper.readValue(principalJSON, Principal.class);
         //double check and make sure the role is valid
         if (principal.getRole() < 1 || principal.getRole() > 3) {
@@ -72,7 +66,6 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(403); // 403 = FORBIDDEN
             return;
         }
-
 
         try {
             String idParam = req.getParameter("id");
@@ -116,29 +109,21 @@ public class UserServlet extends HttpServlet {
      * @throws IOException
      */
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         resp.setContentType("application/json");
-
         ObjectMapper mapper = new ObjectMapper();
         PrintWriter respWriter = resp.getWriter();
-
         try {
             AppUser targetUser = mapper.readValue(req.getInputStream(), AppUser.class);
             System.out.println(targetUser.toString());
             userService.deleteUserByEmail(targetUser);
             resp.setStatus(204); // 204 = confirmed
-
         } catch (Exception e) {
-
             e.printStackTrace();
             resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
             ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
             respWriter.write(mapper.writeValueAsString(err));
-
         }
-
     }
-
 
     /**
      * Update, doPut
@@ -149,37 +134,27 @@ public class UserServlet extends HttpServlet {
      * @throws ServletException
      * @throws IOException
      */
-
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         resp.setContentType("application/json");
-
         ObjectMapper mapper = new ObjectMapper();
         PrintWriter respWriter = resp.getWriter();
-
         try {
             AppUser fixedUser = mapper.readValue(req.getInputStream(), AppUser.class);
-            System.out.println(fixedUser.toString());
+            fixedUser.setHashedPassword(fixedUser.getPassword());
             userService.update(fixedUser);
             resp.setStatus(204); // 204 = confirmed
-
         } catch (MismatchedInputException mie) {
-
             resp.setStatus(400); // 400 = BAD REQUEST
             ErrorResponse err = new ErrorResponse(400, "Bad Request: Malformed user object found in request body");
             String errJSON = mapper.writeValueAsString(err);
             respWriter.write(errJSON);
-
         } catch (Exception e) {
-
             e.printStackTrace();
             resp.setStatus(500); // 500 = INTERNAL SERVER ERROR
             ErrorResponse err = new ErrorResponse(500, "Mistakes were made.");
             respWriter.write(mapper.writeValueAsString(err));
-
         }
-
     }
 
     /**
@@ -201,6 +176,8 @@ public class UserServlet extends HttpServlet {
         try {
             //maps received input into a new user, sends to registration
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
+            //set the new user's password to the hashed version
+            newUser.setHashedPassword(newUser.getPassword());
             System.out.println(newUser);
             userService.register(newUser);
             String newUserJSON = mapper.writeValueAsString(newUser);

@@ -5,32 +5,33 @@ window.onload = function() {
   hideAll();
   // building the tables with data
   getTicketData();
+  viewTkts();
 
   // adding event listeners for side bar actions
-  document.getElementById('resolveTicketNav').addEventListener('click', resolveFormView);
+  // document.getElementById('resolveTicketNav').addEventListener('click', resolveFormView);
   document.getElementById('viewTicketsNav').addEventListener('click', viewTkts);
   document.getElementById('logoutNav').addEventListener('click', logout);
   // adding event listeners for forms
-  document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
+  // document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
 } //todo: sort show/hide for aesthetics
-function resolveFormView(){
-  console.log("Showing form...")
-  $("#resolveTicketForm").show(500);
-  $("#tktView").hide(500);
-  $("#err-message").hide();
-}
+// function resolveFormView(){
+//   console.log("Showing form...")
+//   $("#resolveTicketForm").show(500);
+//   $("#tktView").hide(500);
+//   $("#err-message").hide();
+// }
 function viewTkts(){
   console.log("Viewing tickets...");
-  $("#resolveTicketForm").hide(500);
+  // $("#resolveTicketForm").hide(500);
   $("#tktView").show(500);
   $("#err-message").hide();
 }
 
 function hideAll(){
   console.log("Hiding everything...");
-  $("#resolveTicketForm").hide(500);
+  // $("#resolveTicketForm").hide(500);
   $("#tktView").hide(500);
   $("#err-message").hide();
 }
@@ -45,10 +46,13 @@ function errorView(){
   },200);
 }
 
-function resolveTicket(){
+function resolveTicket(ticket){
   console.log('Resolving Ticket...');
-  let id = document.getElementById('ticketID').value;
-  let status = document.getElementById('ticketStatus').value;
+  // let id = document.getElementById('ticketID').value;
+  // let status = document.getElementById('ticketStatus').value;
+  let id = ticket.id;
+  let status = ticket.statusID;
+
   //note about status value
   //changing the value here to ints, for the statusID instead of status
     //makes it convenient for sql stuff later
@@ -105,8 +109,9 @@ function getTicketData(){
       if (xhr.readyState == 4 && xhr.status == 200) {
         ticketJSON = JSON.parse(xhr.responseText);
         console.log("ticketsJSON length: " + ticketJSON.length);
-        $('#ticketTable').DataTable( {
-          "autoWidth": false,
+        let table = $('#ticketTable').DataTable( {
+            "autoWidth": false,
+            "paging": false,
             data: ticketJSON,
             columns: [
                 { data: 'id' },
@@ -117,10 +122,53 @@ function getTicketData(){
                 { data: 'description' },
                 { data: 'resolver' },
                 { data: 'type' },
-                { data: 'status' }
+                { data: 'status' },
+                { data: null,
+                defaultContent:
+                  "<a class='tableApproveBtn' href='#'><span data-feather='check-square'></span></a><a class='tableDenyBtn' href='#'><span data-feather='x-square'></span></a>"
+                } //we're adding buttons to the form here
             ]
         } );
+
         $("#ticketTable").addClass("table table-striped table-sm");
+        //re-initialize feather replacing
+        feather.replace();
+        //add button logic to the table
+        //approving
+        $('#ticketTable tbody').on( 'click', '.tableApproveBtn', function () { //from datatable api
+          var data = table.row( $(this).parents('tr') ).data(); //creates an object
+            data.statusID = 2;
+            //send to approve method
+            resolveTicket(data);
+
+
+        } );
+        //denying
+        $('#ticketTable tbody').on( 'click', '.tableDenyBtn', function () { //from datatable api
+          var data = table.row( $(this).parents('tr') ).data(); //creates an object
+            data.statusID = 3;
+            //send to approve method
+            resolveTicket(data);
+
+
+        } );
+        //can't figure this out yet
+        // //force each button that isn't on a PENDING ROW to off itself
+        //   //until i find a better way to deal with datatables api
+        // $('.tableApproveBtn').load(function(){
+        //   var data = table.row( $(this).parents('tr') ).data();
+        //   if(data.status!='Pending'){
+        //     this.style.display = 'none';
+        //   }
+        // });
+        $('#ticketTable tbody').on( 'load', '.tableDenyBtn', function () { //from datatable api
+          var data = table.row( $(this).parents('tr') ).data(); //creates an object
+            if(data.status!=pending){
+              this.style.display = 'none';
+            }
+
+
+        } );
       }
     }
 }

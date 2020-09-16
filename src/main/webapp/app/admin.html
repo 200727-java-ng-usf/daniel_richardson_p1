@@ -29,12 +29,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link active" href="#" id="home">
               <span data-feather="home"></span>
               Dashboard <span class="sr-only">(current)</span>
             </a>
-          </li>
+          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="#" id="viewUsers">
               <span data-feather="users"></span>
@@ -53,12 +53,12 @@
               Update User
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="#" id="deleteUser">
               <span data-feather="user-minus"></span>
               Delete User
             </a>
-          </li>
+          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="#" id="viewTickets">
               <span data-feather="layers"></span>
@@ -80,21 +80,16 @@
           <!-- error message handling, always on top -->
           <div class="alert alert-danger" id="err-message"></div>
           <!-- end error message -->
-          <!-- delete user wrapper -->
-          <div id="deleteUserForm">
-            <h2>Update User by Email</h2>
-            <p>Delete all user data associated with email address.</p>
-            <div class="form-group" style="background-color:red">
-              <label for="emailDe">Email</label>
-              <input class="form-control" id="emailDe" placeholder="Email">
-            </div>
-            <button class="btn btn-danger" id="deleteUserBtn">Delete</button>
-          </div>
-          <!-- end delete user wrapper -->
           <!-- update user wrapper -->
-          <div id="updateUserForm">
-            <h2>Update User by Email</h2>
-            <div class="form-group" style="background-color:pink">
+          <div id="updateUserForm" style="width: 75%;margin:auto">
+            <h2>Update User by ID</h2>
+            <fieldset disabled>
+              <div class="form-group">
+                <label for="IDUp">ID</label>
+                <input class="form-control" id="IDUp" placeholder="ID Required" style="background-color: #b78585;">
+              </div>
+            </fieldset>
+            <div class="form-group">
               <label for="emailUp">Email</label>
               <input class="form-control" id="emailUp" placeholder="Email">
             </div>
@@ -119,6 +114,7 @@
                 <option value="3">Employee</option>
                 <option value="2">Manager</option>
                 <option value="1">Admin</option>
+                <option value="4" selected required>Choose a Role</option>
               </select>
             </div>
             <button class="btn btn-primary" id="updateUserBtn">Submit</button>
@@ -127,7 +123,7 @@
             <br>
           </div>
           <!-- create user wrapper -->
-          <div id="createUserForm">
+          <div id="createUserForm" style="width: 75%;margin:auto">
             <h2>Create New User</h2>
             <div class="form-group">
               <label for="usernameCr">Username</label>
@@ -150,10 +146,11 @@
               <input class="form-control" id="emailCr" placeholder="Email">
             </div>
             <div class="form-group">
-              <select class="form-control" id="roleCr">
+              <select class="form-control" id="roleCr" required>
                 <option value="3">Employee</option>
                 <option value="2">Manager</option>
                 <option value="1">Admin</option>
+                <option value="4" selected>Choose a Role</option>
               </select>
             </div>
             <button class="btn btn-primary" id="createUserBtn">Submit</button>
@@ -173,6 +170,7 @@
                   <th>Last</th>
                   <th>Email</th>
                   <th>Role</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -227,7 +225,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="admin.js"> </script>
     <script>
-      feather.replace()
+      feather.replace();
     </script>
 
   </body>

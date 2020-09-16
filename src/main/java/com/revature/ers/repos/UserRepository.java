@@ -1,9 +1,6 @@
 package com.revature.ers.repos;
-
 import com.revature.ers.models.AppUser;
-//import com.revature.ers.models.Role;
 import com.revature.ers.services.ConnectionService;
-
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Optional;
@@ -23,27 +20,15 @@ import java.util.Set;
  * --deletes user
  * --updates user
  */
-
-/*
-    Recommended methods to implement:
-        - Set<AppUser> findAllUsers()
-        - Optional<AppUser> findUserById(int id)
-        - Set<AppUser> findUsersByRole(String rolename)
-        - boolean/void updateUser(AppUser updatedUser)
-        - boolean/void deleteUserById(int id)
-        - Optional<AppUser> findUserByEmail(String email)
- */
 public class UserRepository {
 
     // extract common query clauses into a easily referenced member for reusability.
     private String baseQuery = "SELECT * FROM project1.ers_users au " +
                                "JOIN ers_user_roles ur " +
                                "ON au.user_role_id = ur.role_id ";
-
     public UserRepository() {
         System.out.println("[LOG] - Instantiating " + this.getClass().getName());
     }
-
     public Optional<AppUser> findUserById(int id) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -66,7 +51,6 @@ public class UserRepository {
         return _user;
 
     }
-
     public Set<AppUser> findAllUsers() {
 
         Set<AppUser> users = new HashSet<>();
@@ -88,7 +72,6 @@ public class UserRepository {
         return users;
 
     }
-
     public Optional<AppUser> findUserByCredentials(String username, String password, int role) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -113,16 +96,11 @@ public class UserRepository {
 
         return _user;
     }
-
     public Optional<AppUser> findUserByUsername(String username) {
 
         Optional<AppUser> _user = Optional.empty();
 
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
-
-            // you can control whether or not JDBC automatically commits DML statements
-//            conn.setAutoCommit(false);
-
             String sql = baseQuery + "WHERE username = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -131,10 +109,6 @@ public class UserRepository {
             ResultSet rs = pstmt.executeQuery();
             _user = mapResultSet(rs).stream().findFirst();
 
-            // if you want to manually control the transaction
-//            conn.commit();
-//            conn.rollback();
-//            conn.setSavepoint();
 
         } catch (SQLException sqle) {
             sqle.printStackTrace();
@@ -143,7 +117,6 @@ public class UserRepository {
         return _user;
 
     }
-
     public Optional<AppUser> findUserByEmail(String email) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -165,9 +138,7 @@ public class UserRepository {
         return _user;
 
     }
-
     public void save(AppUser newUser) {
-
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
             String sql = "INSERT INTO project1.ers_users (username, password, first_name, last_name, email, user_role_id) " +
@@ -189,7 +160,72 @@ public class UserRepository {
         }
 
     }
+    public void update(AppUser updatedUser) {
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
+            String sql = "Update project1.ers_users " +
+                            "SET username = ?, " +
+                                "password = ?, " +
+                                "first_name = ?, " +
+                                "last_name = ?, " +
+                                "user_role_id = ?, " +
+                                "email = ? " +
+                            "WHERE ers_user_id = ?";
+
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, updatedUser.getUsername());
+            pstmt.setString(2, updatedUser.getPassword());
+            pstmt.setString(3, updatedUser.getFirstName());
+            pstmt.setString(4, updatedUser.getLastName());
+            pstmt.setInt(5, updatedUser.getRole());
+            pstmt.setString(6, updatedUser.getEmail());
+            pstmt.setInt(7, updatedUser.getId());
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+
+    }
+    public void delete(AppUser target){
+        //emails are unique
+        //i was going to change this back to delete by ID, but i'm in too deep now
+        //since there's a constraint preventing deleting rows with users who have resolved or submitted tickets,
+            //we'll instead change this to updating all user fields to DELETED
+            //mostly b/c i think the tickets should stay on the server for the employee's future records
+            //and just in case the company gets investigated for tax evasion or fraud or something idk i'm not a cop
+        String email = target.getEmail();
+        try (Connection conn = ConnectionService.getInstance().getConnection()) {
+//            String sql = "DELETE FROM project1.ers_users " +
+//                    "WHERE email = ?";
+            String sql = "Update project1.ers_users " +
+                    "SET username = ?, " +
+                    "password = ' ', " +
+                    "first_name = ' ', " +
+                    "last_name = ' ', " +
+                    "email = ?, " +
+                    "user_role_id = 0 " +
+                    "WHERE email = ?";
+
+            String hashDelete = "DELETED"+target.hashCode();
+            //this right here is some high level hacky stuff
+            //i did this because emails and usernames must be unique by constraint, and future deletes would've been duplicates
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, hashDelete);
+            pstmt.setString(2, hashDelete);
+            pstmt.setString(3, email);
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+    }
     private Set<AppUser> mapResultSet(ResultSet rs) throws SQLException {
 
         Set<AppUser> users = new HashSet<>();
@@ -204,58 +240,11 @@ public class UserRepository {
             temp.setLastName(rs.getString("last_name"));
             temp.setEmail(rs.getString("email"));
             temp.setRole(rs.getInt("user_role_id"));
+            temp.setRoleName(rs.getString("role_name"));
             users.add(temp);
         }
 
         return users;
-
-    }
-
-    public void update(AppUser updatedUser) {
-        try (Connection conn = ConnectionService.getInstance().getConnection()) {
-
-            String sql = "Update project1.ers_users " +
-                            "SET username = ?, " +
-                                "password = ?, " +
-                                "first_name = ?, " +
-                                "last_name = ?, " +
-                                "user_role_id = ? " +
-                            "WHERE email = ?";
-
-            // second parameter here is used to indicate column names that will have generated values
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, updatedUser.getUsername());
-            pstmt.setString(2, updatedUser.getPassword());
-            pstmt.setString(3, updatedUser.getFirstName());
-            pstmt.setString(4, updatedUser.getLastName());
-            pstmt.setInt(5, updatedUser.getRole());
-            pstmt.setString(6, updatedUser.getEmail());
-            System.out.println(pstmt);
-            pstmt.executeUpdate();
-
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-
-
-    }
-
-    public void delete(AppUser target){ //emails are unique
-        String email = target.getEmail();
-        try (Connection conn = ConnectionService.getInstance().getConnection()) {
-
-            String sql = "DELETE FROM project1.ers_users " +
-                    "WHERE email = ?";
-
-            // second parameter here is used to indicate column names that will have generated values
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, email);
-            System.out.println(pstmt);
-            pstmt.executeUpdate();
-
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
 
     }
 }
