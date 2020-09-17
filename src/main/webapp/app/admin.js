@@ -116,6 +116,9 @@ function deleteTargetUser(email){
           location.reload();
         }, 3000); //3 second timer
 
+        //we could actually just split up the functions and call a draw method
+          //anytime there is an update
+
 
     } else if(xhr.readyState == 4 && xhr.status != 204){
       errorView();
@@ -134,6 +137,9 @@ function updateUserInfo(id){
   //realized a mistake and wanted to update it (without refreshing),
   //but since IDs are not updated on the table (unless we pinged for the data)
   //then they would need to base the update on something else unique
+
+  //changed to refresh the page instead. i could fix this to update based on id
+    //but only if i have time
 
   console.log('Updating user...');
   let aa = document.getElementById('usernameUp').value;
@@ -361,6 +367,7 @@ function getTicketData(){
 function alert1(){
   alert("Test"); //for debugging
 }
+
 function logout() {
     console.log('logout invoked!');
     let xhr = new XMLHttpRequest();

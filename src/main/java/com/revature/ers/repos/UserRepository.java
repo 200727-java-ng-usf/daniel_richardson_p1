@@ -21,7 +21,6 @@ import java.util.Set;
  * --updates user
  */
 public class UserRepository {
-
     // extract common query clauses into a easily referenced member for reusability.
     private String baseQuery = "SELECT * FROM project1.ers_users au " +
                                "JOIN ers_user_roles ur " +
@@ -29,6 +28,12 @@ public class UserRepository {
     public UserRepository() {
         System.out.println("[LOG] - Instantiating " + this.getClass().getName());
     }
+
+    /**
+     * Finds a user by given ID
+     * @param id
+     * @return
+     */
     public Optional<AppUser> findUserById(int id) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -51,6 +56,10 @@ public class UserRepository {
         return _user;
 
     }
+    /**
+     * Gets all the users. Called by managers/admins
+     * @return
+     */
     public Set<AppUser> findAllUsers() {
 
         Set<AppUser> users = new HashSet<>();
@@ -72,6 +81,13 @@ public class UserRepository {
         return users;
 
     }
+    /**
+     * Used for logging in.
+     * @param username
+     * @param password
+     * @param role
+     * @return
+     */
     public Optional<AppUser> findUserByCredentials(String username, String password, int role) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -96,6 +112,11 @@ public class UserRepository {
 
         return _user;
     }
+    /**
+     * Used before user creation to ensure username isn't already taken
+     * @param username
+     * @return
+     */
     public Optional<AppUser> findUserByUsername(String username) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -117,6 +138,11 @@ public class UserRepository {
         return _user;
 
     }
+    /**
+     * Used to ensure email isn't already taken.
+     * @param email
+     * @return
+     */
     public Optional<AppUser> findUserByEmail(String email) {
 
         Optional<AppUser> _user = Optional.empty();
@@ -138,6 +164,10 @@ public class UserRepository {
         return _user;
 
     }
+    /**
+     * For creating new users
+     * @param newUser
+     */
     public void save(AppUser newUser) {
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
@@ -160,6 +190,10 @@ public class UserRepository {
         }
 
     }
+    /**
+     * For editing users by ID
+     * @param updatedUser
+     */
     public void update(AppUser updatedUser) {
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
 
@@ -190,6 +224,10 @@ public class UserRepository {
 
 
     }
+    /**
+     * Doesn't actually delete the user, but rewrites the data as deleted (to dodge the ticket constraints)
+     * @param target
+     */
     public void delete(AppUser target){
         //emails are unique
         //i was going to change this back to delete by ID, but i'm in too deep now
@@ -226,6 +264,12 @@ public class UserRepository {
         }
 
     }
+    /**
+     * Maps the results into a user set
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private Set<AppUser> mapResultSet(ResultSet rs) throws SQLException {
 
         Set<AppUser> users = new HashSet<>();

@@ -23,13 +23,15 @@ import java.util.Set;
  */
 
 public class TicketRepository {
-
-
     public TicketRepository() {
         System.out.println("[LOG] - Instantiating " + this.getClass().getName());
     }
 
-
+    /**
+     * Finds the tickets belonging to a specific user
+     * @param username
+     * @return
+     */
     public Set<Ticket> findTicketsByUsername(String username) {
         Set<Ticket> tickets = new HashSet<>();
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
@@ -66,7 +68,10 @@ public class TicketRepository {
         }
         return tickets;
     }
-
+    /**
+     * Gets all the tickets on the db. For use by managers/admins
+     * @return
+     */
     public Set<Ticket> findAllTickets() {
         Set<Ticket> tickets = new HashSet<>();
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
@@ -98,9 +103,11 @@ public class TicketRepository {
         }
         return tickets;
     }
-
-
-    public void resolve(Ticket ticket){ //manager method
+    /**
+     * For use by managers when resolving (approving/denying) tickets
+     * @param ticket
+     */
+    public void resolve(Ticket ticket){
         //id, resolve, resolver, status
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
             String sql = "Update project1.ers_reimbursements " +
@@ -120,9 +127,11 @@ public class TicketRepository {
             sqle.printStackTrace();
         }
     }
-
-
-    public void editPending(Ticket ticket){ //employee method
+    /**
+     * For use by employees when editing a pending ticket. Only pending tickets may be edited.
+     * @param ticket
+     */
+    public void editPending(Ticket ticket){
         //id, amount, desc, type
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
             String sql = "Update project1.ers_reimbursements " +
@@ -143,8 +152,11 @@ public class TicketRepository {
             sqle.printStackTrace();
         }
     }
-
-    public void submit(Ticket ticket){ //employee method
+    /**
+     * For submitting new tickets from employees.
+     * @param ticket
+     */
+    public void submit(Ticket ticket){
         //submitted, author, status, amount, description, typeID
         try (Connection conn = ConnectionService.getInstance().getConnection()) {
             String sql = "INSERT into project1.ers_reimbursements " +
@@ -163,8 +175,11 @@ public class TicketRepository {
             sqle.printStackTrace();
         }
     }
-
-
+    /**
+     * Ensures that the requested ticket(s) belong to the calling user
+     * @param ticket
+     * @return
+     */
     public boolean validateTicketWithUser(Ticket ticket){
         //make sure the user is editing their own ticket
         //also make sure its PENDING
@@ -185,8 +200,12 @@ public class TicketRepository {
         }
         return false;
     }
-
-
+    /**
+     * Maps the query results into a set for further manipulation or for JSON packages for a response
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     private Set<Ticket> mapResultSet(ResultSet rs) throws SQLException {
         System.out.println("Mapper invoked.");
         Set<Ticket> tickets = new HashSet<>();

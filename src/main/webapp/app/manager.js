@@ -15,13 +15,7 @@ window.onload = function() {
   // document.getElementById('resolveBtn').addEventListener('click', resolveTicket);
   // $('#userTable').DataTable();
   console.log("Loaded functions!");
-} //todo: sort show/hide for aesthetics
-// function resolveFormView(){
-//   console.log("Showing form...")
-//   $("#resolveTicketForm").show(500);
-//   $("#tktView").hide(500);
-//   $("#err-message").hide();
-// }
+}
 function viewTkts(){
   console.log("Viewing tickets...");
   // $("#resolveTicketForm").hide(500);
@@ -92,6 +86,9 @@ function resolveTicket(ticket){
   }
 
 }
+
+
+
 
 //reimb_id, amount, submitted, resolved,
 //description, username, resolver, reimb_type, reimb_status
