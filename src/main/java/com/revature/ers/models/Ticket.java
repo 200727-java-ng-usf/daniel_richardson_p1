@@ -69,6 +69,16 @@ public class Ticket {
         this.status = status;
         this.type = type;
     }
+    //no timestamps
+    public Ticket(int id, int amount, String description, int author, int resolver, int status, int type) {
+        this.id = id;
+        this.amount = amount;
+        this.description = description;
+        this.authorID = author;
+        this.resolverID = resolver;
+        this.statusID = status;
+        this.typeID = type;
+    }
     //minus id
     public Ticket(int amount, Timestamp submitted, Timestamp resolve, String description, String author, String resolver, String status, String type) {
         this.amount = amount;

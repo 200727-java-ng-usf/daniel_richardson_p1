@@ -92,6 +92,10 @@ public class UserService {
         if(deletedUser.getEmail() == null || deletedUser.getEmail().trim().equals("")){
             throw new InvalidRequestException("Invalid email!");
         }
+        if(isEmailAvailable(deletedUser.getEmail())){
+            //if target user's email is already available, it was an invalid request
+            throw new InvalidRequestException("Invalid email!");
+        }
         userRepo.delete(deletedUser);
     }
 

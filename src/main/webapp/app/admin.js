@@ -54,7 +54,7 @@ function viewUsers(){
   $("#createUserForm").hide(500);
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
-  // $("#deleteUserForm").hide(500);
+
 }
 function viewTkts(){
   console.log("Viewing tickets...");
@@ -65,7 +65,6 @@ function viewTkts(){
   $("#createUserForm").hide(500);
   $("#err-message").hide();
   $("#updateUserForm").hide(500);
-  // $("#deleteUserForm").hide(500);
 }
 
 function hideAll(){

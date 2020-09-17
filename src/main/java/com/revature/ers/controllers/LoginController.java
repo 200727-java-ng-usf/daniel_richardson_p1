@@ -1,9 +1,5 @@
 package com.revature.ers.controllers;
 
-import com.revature.ers.services.LoginService;
-
-import javax.servlet.http.HttpServletRequest;
-
 /*
  * The purpose:
  *
